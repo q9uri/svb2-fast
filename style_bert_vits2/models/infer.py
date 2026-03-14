@@ -230,7 +230,7 @@ def get_text(
         # 日本語のみに対応した JP-Extra モデルでは ja_bert のみが推論時に参照され、他言語の特徴量は推論時には一切利用されない
         # 空テンソルは CPU 上で作成し、GPU 転送を避けることで VRAM 使用量とメモリ断片化を削減
         empty_tensor = torch.empty(0, 0)  # CPU 上で作成
-        if language_str == Languages.JP:
+        if language_str in (Languages.JP, Languages.JP2):
             zh_bert = empty_tensor
             ja_bert = bert_ori
             en_bert = empty_tensor
@@ -250,7 +250,7 @@ def get_text(
             zh_bert = bert_ori
             ja_bert = torch.zeros(1024, len(phone), device=device)
             en_bert = torch.zeros(1024, len(phone), device=device)
-        elif language_str == Languages.JP:
+        elif language_str in (Languages.JP, Languages.JP2):
             zh_bert = torch.zeros(1024, len(phone), device=device)
             ja_bert = bert_ori
             en_bert = torch.zeros(1024, len(phone), device=device)

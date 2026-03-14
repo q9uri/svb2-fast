@@ -97,7 +97,7 @@ def get_text_onnx(
         zh_bert = bert_ori
         ja_bert = np.zeros((1024, len(phone)), dtype=np.float32)
         en_bert = np.zeros((1024, len(phone)), dtype=np.float32)
-    elif language_str == Languages.JP:
+    elif language_str in (Languages.JP, Languages.JP2):
         zh_bert = np.zeros((1024, len(phone)), dtype=np.float32)
         ja_bert = bert_ori
         en_bert = np.zeros((1024, len(phone)), dtype=np.float32)

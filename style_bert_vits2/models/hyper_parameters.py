@@ -41,6 +41,7 @@ class HyperParametersTrain(BaseModel):
 class HyperParametersData(BaseModel):
     # use_jp_extra フィールドが存在しない旧モデルとの互換性のために False をデフォルト値とする
     use_jp_extra: bool = False
+    use_jp2_extra: bool = False
     training_files: str = "Data/Dummy/train.list"
     validation_files: str = "Data/Dummy/val.list"
     max_wav_value: float = 32768.0
@@ -124,6 +125,21 @@ class HyperParameters(BaseModel):
 
         # 基本的にはハイパーパラメータのここで判断できるはず
         if self.data.use_jp_extra is True:
+            return True
+
+        # フォールバック
+        return self.version.endswith("JP-Extra") or self.version.endswith("Nanairo")
+
+    def is_jp2_extra_like_model(self) -> bool:
+        """
+        JP-Extra 互換モデルかどうかを判定する。
+
+        Returns:
+            bool: JP-Extra 互換モデルかどうか
+        """
+
+        # 基本的にはハイパーパラメータのここで判断できるはず
+        if self.data.use_jp2_extra is True:
             return True
 
         # フォールバック

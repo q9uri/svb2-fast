@@ -219,22 +219,6 @@ class Decoder(nn.Module):
         x = x * x_mask
         return x
 
-from torch.nn.attention.flex_attention import flex_attention, create_block_mask
-
-# Local + Global のロジック定義
-def local_global_mask(b, h, q_idx, kv_idx):
-    # 1. Local: 直近 512 トークンを見る
-
-    #is_local = (q_idx - kv_idx) < 512
-    is_local = (q_idx - kv_idx) < 64
-    # 2. Global: 最初の 64 トークン（システムプロンプト等）は常に全員が見る
-    #is_global = kv_idx < 64
-    is_global = kv_idx < 8
-
-    # 因果的制約（未来のトークンは見ない）も忘れずに
-    is_causal = q_idx >= kv_idx
-
-    return is_causal & (is_local | is_global)
 
 class MultiHeadAttention(nn.Module):
     def __init__(
@@ -292,8 +276,6 @@ class MultiHeadAttention(nn.Module):
                 assert self.conv_q.bias is not None
                 self.conv_k.bias.copy_(self.conv_q.bias)
 
-        self.compiled_flex_attn = torch.compile(flex_attention)
-
     def forward(
         self,
         x: torch.Tensor,
@@ -305,45 +287,12 @@ class MultiHeadAttention(nn.Module):
         k = self.conv_k(c)
         v = self.conv_v(c)
 
-        #注意重みなんて保持しない
-        self.attn = None
-        is_causal = False
-        q_len = q.shape[-2]
-        kv_len = k.shape[-2]
-        use_sparse = q_len > 512 and kv_len > 512
-
-        if use_sparse:
-            block_mask = create_block_mask(
-                local_global_mask,
-                B=None, H=None,
-                Q_LEN=q_len, KV_LEN=kv_len,  # 最大長
-                device="auto"
-            )
-            # block_maskを渡すと、計算の必要がないブロックを自動的にスキップします
-            x = self.compiled_flex_attn(
-                query=q,
-                key=k,
-                value=v,
-                block_mask=block_mask,
-                enable_gqa=True,
-            )
-        else:
-            x = torch.nn.functional.scaled_dot_product_attention(
-                q,
-                k,
-                v,
-                is_causal=is_causal,
-                enable_gqa=True,
-            )
-
-        """
         # 学習時のみ self.attn に注意重みを保持し、推論時はメモリ節約のため保持しない
         x, attn = self.attention(q, k, v, mask=attn_mask, use_fp16=use_fp16)
         if torch.is_grad_enabled():
             self.attn = attn
         else:
             self.attn = None
-        """
 
         x = self.conv_o(x)
         return x

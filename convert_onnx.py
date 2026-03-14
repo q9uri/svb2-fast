@@ -1,6 +1,6 @@
 # Usage: .venv/bin/python convert_onnx.py --model model_assets/koharune-ami/koharune-ami.safetensors
 #        .venv/bin/python convert_onnx.py --model model_assets/ (All models in the directory will be converted)
-
+import json
 # https://github.com/tuna2134/sbv2-api/blob/main/scripts/convert/convert_model.py を参考に実装した
 #
 # MIT License
@@ -203,8 +203,13 @@ if __name__ == "__main__":
             noise_scale = torch.tensor(0.667)
             noise_scale_w = torch.tensor(0.8)
 
+            with open(config_path, "r") as f:
+                config = json.load(f)
+            use_jpextra = config["data"]["use_jp_extra"]
+
             # JP-Extra モデルアーキテクチャ向けの ONNX 変換ロジック
-            if isinstance(tts_model.net_g, SynthesizerTrnJPExtra):
+            #if isinstance(tts_model.net_g, SynthesizerTrnJPExtra):
+            if use_jpextra:
                 # SynthesizerTrnJPExtra の forward メソッドをオーバーライド
                 def forward_jp_extra(
                     x: torch.Tensor,
@@ -434,7 +439,6 @@ if __name__ == "__main__":
                         model_path.name,
                         model_uuid,
                     )
-
             # AIVM ファイルを生成
             if args.aivm and (not aivm_path.exists() or args.force_convert):
                 print("[bold cyan]Generating AIVM file...[/bold cyan]")

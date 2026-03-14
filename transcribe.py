@@ -86,7 +86,7 @@ def transcribe_files_with_hf_whisper(
     num_beams: int = 1,
     no_repeat_ngram_size: int = 10,
     device: str = "cuda",
-    pbar: tqdm[Any] | None = None,  # type: ignore[type-arg]
+    pbar: any = None,  # type: ignore[type-arg]
 ) -> list[str]:
     import torch
     from transformers import WhisperProcessor, pipeline

@@ -13,6 +13,7 @@ from style_bert_vits2.logging import logger
 from style_bert_vits2.utils.paths import add_model_argument, get_paths_config
 from style_bert_vits2.utils.stdout_wrapper import SAFE_STDOUT
 
+import librosa
 
 def is_audio_file(file: Path) -> bool:
     supported_extensions = [".wav", ".flac", ".mp3", ".ogg", ".opus", ".m4a"]
@@ -44,8 +45,8 @@ def get_stamps(
     sampling_rate = 16000  # 16kHzか8kHzのみ対応
 
     min_ms = int(min_sec * 1000)
-
-    wav = read_audio(str(audio_file), sampling_rate=sampling_rate)
+    wav, _ = librosa.load(path=str(audio_file), sr=sampling_rate)
+    #wav = read_audio(str(audio_file), sampling_rate=sampling_rate)
     speech_timestamps = get_speech_timestamps(
         wav,
         vad_model,
