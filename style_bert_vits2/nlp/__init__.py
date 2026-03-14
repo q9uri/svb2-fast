@@ -4,7 +4,7 @@ from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 from numpy.typing import NDArray
-from pyopenjtalk import OpenJTalk
+#from pyopenjtalk import OpenJTalk
 
 from style_bert_vits2.constants import Languages
 from style_bert_vits2.nlp.symbols import (
@@ -148,7 +148,7 @@ def _clean_text(
     language: Languages,
     use_jp_extra: bool = True,
     raise_yomi_error: bool = False,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
 ) -> tuple[
     str,
     list[str],
@@ -228,7 +228,7 @@ def clean_text_with_given_phone_tone(
     given_tone: list[int] | None = None,
     use_jp_extra: bool = True,
     raise_yomi_error: bool = False,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
 ) -> tuple[
     str,
     list[str],

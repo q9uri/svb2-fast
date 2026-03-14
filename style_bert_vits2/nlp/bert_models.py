@@ -143,7 +143,7 @@ def load_model(
     # BERT モデルをロードし、辞書に格納して返す
     ## 日本語または英語のみ DebertaV2Model でロードする必要がある
     start_time = time.time()
-    if language == Languages.JP or language == Languages.EN:
+    if language == Languages.EN:
         __loaded_models[language] = DebertaV2Model.from_pretrained(
             pretrained_model_name_or_path,
             device_map=device_map,

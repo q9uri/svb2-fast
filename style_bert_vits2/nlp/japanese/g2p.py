@@ -2,12 +2,12 @@ import re
 import sys
 from typing import TypedDict
 
-from pyopenjtalk import NJDFeature, OpenJTalk
+#from pyopenjtalk import NJDFeature, OpenJTalk
 
 from style_bert_vits2.constants import Languages
 from style_bert_vits2.logging import logger
 from style_bert_vits2.nlp import bert_models
-from style_bert_vits2.nlp.japanese import pyopenjtalk_worker as pyopenjtalk
+from style_bert_vits2.nlp.japanese import pyopenjtalk
 from style_bert_vits2.nlp.japanese.mora_list import MORA_KATA_TO_MORA_PHONEMES, VOWELS
 from style_bert_vits2.nlp.japanese.normalizer import replace_punctuation
 from style_bert_vits2.nlp.symbols import PUNCTUATIONS
@@ -17,7 +17,7 @@ def g2p(
     norm_text: str,
     use_jp_extra: bool = True,
     raise_yomi_error: bool = False,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
 ) -> tuple[list[str], list[int], list[int], list[str], list[str], list[str]]:
     """
     他で使われるメインの関数。`normalize_text()` で正規化された `norm_text` を受け取り、
@@ -118,9 +118,9 @@ def g2p(
 
 def text_to_sep_kata(
     norm_text: str,
-    njd_features: list[NJDFeature] | None = None,
+    njd_features: list[any] | None = None,
     raise_yomi_error: bool = False,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
 ) -> tuple[list[str], list[str], list[str]]:
     """
     `normalize_text` で正規化済みの `norm_text` を受け取り、それを単語分割し、
@@ -480,8 +480,8 @@ def adjust_word2ph(
 
 
 def __g2phone_tone_wo_punct(
-    njd_features: list[NJDFeature],
-    jtalk: OpenJTalk | None = None,
+    njd_features: list[any],
+    jtalk: any = None,
 ) -> list[tuple[str, int]]:
     """
     テキストに対して、音素とアクセント（0か1）のペアのリストを返す。
@@ -551,9 +551,9 @@ __PYOPENJTALK_G2P_PROSODY_P3_PATTERN = re.compile(r"\-(.*?)\+")
 
 
 def __pyopenjtalk_g2p_prosody(
-    njd_features: list[NJDFeature],
+    njd_features: list[any],
     drop_unvoiced_vowels: bool = True,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
 ) -> list[str]:
     """
     ESPnet の実装から引用。直接 NJDFeature のリストを受け取る形に変更した。「ん」は「N」なことに注意。

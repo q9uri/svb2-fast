@@ -15,7 +15,7 @@ import numpy as np
 from fastapi import HTTPException
 
 from style_bert_vits2.constants import DEFAULT_USER_DICT_DIR
-from style_bert_vits2.nlp.japanese import pyopenjtalk_worker as pyopenjtalk
+from style_bert_vits2.nlp.japanese import pyopenjtalk
 from style_bert_vits2.nlp.japanese.user_dict.part_of_speech_data import (
     MAX_PRIORITY,
     MIN_PRIORITY,
@@ -35,7 +35,7 @@ default_dict_path = (
 )  # VOICEVOXデフォルト辞書ファイルのパス
 user_dict_path = DEFAULT_USER_DICT_DIR / "user_dict.json"  # ユーザー辞書ファイルのパス
 compiled_dict_path = (
-    DEFAULT_USER_DICT_DIR / "user.dic"
+    DEFAULT_USER_DICT_DIR / "user.bin"
 )  # コンパイル済み辞書ファイルのパス
 
 

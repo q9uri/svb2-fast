@@ -4,7 +4,7 @@ from typing import Any, cast
 import numpy as np
 import torch
 from numpy.typing import NDArray
-from pyopenjtalk import OpenJTalk
+#from pyopenjtalk import OpenJTalk
 from torch.overrides import TorchFunctionMode
 from torch.utils import _device
 
@@ -190,7 +190,7 @@ def get_text(
     assist_text_weight: float = 0.7,
     given_phone: list[str] | None = None,
     given_tone: list[int] | None = None,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
 ) -> tuple[
     torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor
 ]:
@@ -285,7 +285,7 @@ def prepare_inference_data(
     assist_text_weight: float = 0.7,
     given_phone: list[str] | None = None,
     given_tone: list[int] | None = None,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
     enable_tensor_padding: bool = False,
 ) -> tuple[
     torch.Tensor,
@@ -418,7 +418,7 @@ def predict_token_durations(
     assist_text_weight: float = 0.7,
     given_phone: list[str] | None = None,
     given_tone: list[int] | None = None,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
     use_fp16: bool = False,
     enable_tensor_padding: bool = False,
 ) -> TokenDurationsResult:
@@ -767,7 +767,7 @@ def infer(
     given_phone: list[str] | None = None,
     given_phone_length: list[float | None] | None = None,
     given_tone: list[int] | None = None,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
     use_fp16: bool = False,
     clear_cuda_cache: bool = True,
     enable_tensor_padding: bool = False,
@@ -943,7 +943,7 @@ def infer_stream(
     given_phone: list[str] | None = None,
     given_phone_length: list[float | None] | None = None,
     given_tone: list[int] | None = None,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
     use_fp16: bool = False,
     clear_cuda_cache: bool = True,
     chunk_size: int = 65,  # 下記記事を参考に最適な値を調整

@@ -5,7 +5,7 @@ import numpy as np
 import onnxruntime
 from numpy.typing import NDArray
 from pydantic import BaseModel
-from pyopenjtalk import OpenJTalk
+#from pyopenjtalk import OpenJTalk
 
 from style_bert_vits2.constants import Languages
 from style_bert_vits2.models.hyper_parameters import HyperParameters
@@ -57,7 +57,7 @@ def get_text_onnx(
     assist_text_weight: float = 0.7,
     given_phone: list[str] | None = None,
     given_tone: list[int] | None = None,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
 ) -> tuple[
     NDArray[Any], NDArray[Any], NDArray[Any], NDArray[Any], NDArray[Any], NDArray[Any]
 ]:
@@ -136,7 +136,7 @@ def infer_onnx(
     assist_text_weight: float = 0.7,
     given_phone: list[str] | None = None,
     given_tone: list[int] | None = None,
-    jtalk: OpenJTalk | None = None,
+    jtalk: any = None,
 ) -> NDArray[np.float32]:
     """
     ONNX 版音声合成モデルの推論を実行する関数。
