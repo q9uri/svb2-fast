@@ -42,6 +42,8 @@ from contextlib import AbstractContextManager, contextmanager
 from threading import Lock
 from pathlib import Path
 
+from ..user_dict import default_dict_path
+
 _T = TypeVar("_T")
 
 def _global_instance_manager(
@@ -80,9 +82,7 @@ def update_global_jtalk_with_user_dict(
         user_dictionary: str | Path | None = None
         ) -> None:
     """Update global openjtalk instance with the user dictionary
-
     Note that this will change the global state of the openjtalk module.
-
     """
 
     global _global_jpreprocess
@@ -92,18 +92,27 @@ def update_global_jtalk_with_user_dict(
         )
 #-----------------------------------------------------------
 
+from .ja_userdic import create_csv, tmp_csv_path, tmp_usr_dict_path, tmp_dict_path
 
 def unset_user_dict():
+    create_csv()
+
     global _global_jpreprocess
     with _global_jpreprocess():
         _global_jpreprocess = _global_instance_manager(
-            instance=jpreprocess.jpreprocess(),
+            instance=jpreprocess.jpreprocess(user_dictionary=tmp_dict_path),
         )
 
 def mecab_dict_index(path: str, out_path: str, dn_mecab: str | None = None):
-    jpreprocess.build_dictionary(input=path, output=out_path, user=True)
+    create_csv()
 
+    input_data = Path(path).read_text(encoding="utf-8")
+    default_dict_data = tmp_csv_path.read_text(encoding="utf-8")
+    merged_csv = input_data + default_dict_data
+    merged_csv = merged_csv.replace("\n\n", "\n")
 
+    tmp_usr_dict_path.write_text(merged_csv, encoding="utf-8")
+    jpreprocess.build_dictionary(input=str(tmp_usr_dict_path), output=out_path, user=True)
 
 def extract_fullcontext(
         text: str,
