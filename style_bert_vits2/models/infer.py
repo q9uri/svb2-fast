@@ -27,6 +27,7 @@ from style_bert_vits2.nlp import (
     extract_bert_feature,
 )
 from style_bert_vits2.nlp.symbols import SYMBOLS
+from style_bert_vits2.sig import sig_audio
 
 
 class EmptyInitOnDevice(TorchFunctionMode):
@@ -921,6 +922,7 @@ def infer(
         if clear_cuda_cache and torch.cuda.is_available():
             torch.cuda.empty_cache()
 
+        audio, _ = sig_audio(audio, hps.data.sampling_rate)
         return audio
 
 

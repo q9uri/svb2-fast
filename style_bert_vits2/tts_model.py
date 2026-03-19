@@ -30,7 +30,6 @@ from style_bert_vits2.models.hyper_parameters import HyperParameters
 from style_bert_vits2.models.infer_onnx import TokenDurationsResult
 from style_bert_vits2.voice import adjust_voice
 
-
 if TYPE_CHECKING:
     from style_bert_vits2.models.models import SynthesizerTrn
     from style_bert_vits2.models.models_jp_extra import (

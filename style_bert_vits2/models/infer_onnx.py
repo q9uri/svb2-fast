@@ -15,6 +15,7 @@ from style_bert_vits2.nlp import (
     extract_bert_feature_onnx,
 )
 from style_bert_vits2.utils import get_onnx_device_options
+from style_bert_vits2.sig import sig_audio
 
 
 class TokenDurationsResult(BaseModel):
@@ -244,5 +245,6 @@ def infer_onnx(
         en_bert,
         style_vec,
     )
+    audio, _ = sig_audio(audio, hps.data.sampling_rate)
 
     return audio
