@@ -14,6 +14,8 @@ import argparse
 import time
 from typing import Any, cast
 
+from pathlib import Path
+
 import numpy as np
 import torch
 from numpy.typing import NDArray
@@ -33,21 +35,27 @@ from style_bert_vits2.sig.decode_sig import decode_sig
 
 from ..utils import save_benchmark_audio, set_random_seeds
 
-
-# 測定用サンプルテキスト
-BENCHMARK_TEXTS = [
+benchmark_texts = [
     {
         # 初回ロード用（ダミー）
         "text": "あああ",
         "estimated_duration": 1.1,
         "description": "短文（約1秒）",
-    },
-    {
-        "text": "こんにちは",
-        "estimated_duration": 1.1,
-        "description": "短文（約1秒）",
-    },
+    }
 ]
+
+current_dir = Path(__file__).parent
+ita_text_path = current_dir / "ita_corpus/emotion_transcript_utf8.txt"
+
+ita_text = ita_text_path.read_text(encoding="utf-8")
+
+for line in ita_text.split("\n"):
+    if ":" in line:
+        transcript = line.split(":")[1]
+        transcript = transcript.split(",")[0]
+        benchmark_texts.append({"text": transcript, "estimated_duration": 0, "description": "ita emotion"})
+
+# 測定用サンプルテキスト
 
 
 def measure_infer_performance(
@@ -169,7 +177,7 @@ def run_benchmark(
     results = []
 
     # 各テキストでベンチマークを実行
-    for i, test_case in enumerate(BENCHMARK_TEXTS):
+    for i, test_case in enumerate(benchmark_texts):
         text = cast(str, test_case["text"])
         estimated_duration = test_case["estimated_duration"]
         description = test_case["description"]
@@ -197,7 +205,7 @@ def run_benchmark(
                 )
                 infer_times.append(infer_time)
                 infer_durations.append(infer_duration)
-                infer_decoded_text.append(decoded_text)
+                infer_decoded_text.append(f"{text}:{decoded_text}")
 
                 # 最後の実行の音声データを保存
                 if run == num_runs - 1:

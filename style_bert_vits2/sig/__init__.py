@@ -13,8 +13,10 @@ def sig_audio(base_audio: np.ndarray, fs = 44100):
         'C4': 261.63, 'D4': 293.66, 'E4': 329.63, 'F4': 349.23,
         'bit1': 15000.00, 'bit0': 14000.00
     }
-
     def gen_unit(freq):
+        return 0.01 * np.sin(2 * np.pi * freq * t_unit) * window
+
+    def gen_unit_bit(freq):
         return 0.01 * np.sin(2 * np.pi * freq * t_unit) * window
 
     def encode_byte(hex_val):
@@ -22,7 +24,7 @@ def sig_audio(base_audio: np.ndarray, fs = 44100):
         seq = [gen_unit(freqs[f]) for f in ['C4', 'D4', 'E4', 'F4']]
         for bit in binary_str:
             f = freqs['bit1'] if bit == '1' else freqs['bit0']
-            seq.append(gen_unit(f))
+            seq.append(gen_unit_bit(f))
         return np.concatenate(seq)
 
     # 埋め込みたいテキストをバイト列に変換
