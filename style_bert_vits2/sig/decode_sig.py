@@ -1,8 +1,14 @@
 #q9uri lgpl3 license
 import numpy as np
-import librosa
+from .signature_antinoise import remove_voice
 
-def decode_sig(audio:np.ndarray, fs = 44100):
+def decode_sig(input_audio:np.ndarray, fs:int = 44100, fake_overwrite:bool=False):
+
+    if fake_overwrite:
+        y, fs = remove_voice(input_audio, "can write fake sig", fs)
+    else:
+        y = input_audio
+
 
     interval = 0.1
     unit_samples = int(fs * (interval / 12))
@@ -11,7 +17,7 @@ def decode_sig(audio:np.ndarray, fs = 44100):
     f_low, f_high = 14000.00, 15000.00
 
     #y, _ = librosa.load('./embedded_output.wav', sr=fs)
-    y = audio
+
     decoded_results = []
     i = 0
     # 信号が短いので、1/2ユニットずつ細かくスライドしてヘッダーを探す

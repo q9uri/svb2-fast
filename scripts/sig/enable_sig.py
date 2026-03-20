@@ -17,5 +17,5 @@ audio_files = [file for file in input_dir.rglob("*") if is_audio_file(file)]
 for audio_file in audio_files:
     audio, sr = librosa.load(str(audio_file), sr=None, mono=False)
 
-    audio, sr = sig_audio(audio, sr)
+    audio, sr = sig_audio(base_audio=audio,key="by-ai", fs=sr)
     sf.write(str(output_dir / f"{audio_file.name}.wav"), audio, sr)
