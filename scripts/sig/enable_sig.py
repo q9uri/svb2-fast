@@ -2,11 +2,12 @@
 
 from pathlib import Path
 import librosa
-from style_bert_vits2.sig import sig_audio
+from style_bert_vits2.sig import sig_audio, sig_audio_morse
 import soundfile as sf
 
 input_dir = Path(__file__).parent / "wavs/input"
 output_dir = Path(__file__).parent / "wavs/output"
+output_morse_dir = Path(__file__).parent / "wavs/output_morse"
 
 def is_audio_file(file: Path) -> bool:
     supported_extensions = [".wav", ".flac", ".mp3", ".ogg", ".opus", ".m4a"]
@@ -19,3 +20,9 @@ for audio_file in audio_files:
 
     audio, sr = sig_audio(base_audio=audio,key="by-ai", fs=sr)
     sf.write(str(output_dir / f"{audio_file.name}.wav"), audio, sr)
+
+for audio_file in audio_files:
+    audio, sr = librosa.load(str(audio_file), sr=None, mono=False)
+
+    audio, sr = sig_audio_morse(base_audio=audio,key="BY AI", fs=sr)
+    sf.write(str(output_morse_dir / f"{audio_file.name}_morse.wav"), audio, sr)

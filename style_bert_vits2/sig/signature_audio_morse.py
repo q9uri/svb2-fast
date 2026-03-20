@@ -1,7 +1,7 @@
 #q9uri lgpl3 license
 import numpy as np
 
-def sig_audio_morse(base_audio: np.ndarray, fs = 44100) -> tuple[np.ndarray, int]:
+def sig_audio_morse(base_audio: np.ndarray, fs = 44100, key:str = "BY AI") -> tuple[np.ndarray, int]:
     # --- 設定 ---
     unit_duration = 0.05
     freq_dot = 440.0
@@ -41,7 +41,7 @@ def sig_audio_morse(base_audio: np.ndarray, fs = 44100) -> tuple[np.ndarray, int
     # ガード区間（無音）
     gap = gen_element(0.1, freq=None)
     # モールス信号
-    body_signal = text_to_morse_signal("BY AI")
+    body_signal = text_to_morse_signal(key)
 
     # 1セット: [ヘッダー] + [無音] + [モールス] + [末尾無音]
     loop_unit = np.concatenate([header_signal, gap, body_signal, gen_element(unit_duration * 7, freq=freq_spacer)])
