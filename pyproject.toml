@@ -50,6 +50,9 @@ dependencies = [
     # ロード時にハングアップするため、やむを得ず当面の間 4.50.0 未満に固定する
     # ref: https://github.com/huggingface/transformers/issues/36803
     "transformers<4.50.0",
+    "wavmark",
+    "audioseal",
+    "setuptools",
 ]
 
 # ライブラリ利用者向けのオプション依存関係

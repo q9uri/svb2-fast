@@ -1,7 +1,8 @@
 #q9uri lgpl3 license
 import numpy as np
 
-def sig_audio(base_audio: np.ndarray, fs = 44100, key:str = "by-ai") -> tuple[np.ndarray, int]:
+def remove_voice(input_audio: np.ndarray, key:str, fs:int = 44100) -> tuple[np.ndarray, int]:
+    base_audio = input_audio
     interval = 0.1
     unit_duration = interval / 12
     t_unit = np.linspace(0, unit_duration, int(fs * unit_duration), endpoint=False)
@@ -33,7 +34,7 @@ def sig_audio(base_audio: np.ndarray, fs = 44100, key:str = "by-ai") -> tuple[np
     data_with_separator = data_bytes
     hex_list = [f"{b:02x}" for b in data_with_separator]
 
-    output_audio = base_audio.copy()
+    output_audio = -base_audio.copy()
 
     # ベース音声の最後までループ
     # idx: 埋め込み位置のカウント
@@ -54,4 +55,7 @@ def sig_audio(base_audio: np.ndarray, fs = 44100, key:str = "by-ai") -> tuple[np
         output_audio[start_sample:end_sample] += signal
         idx += 1
 
-    return output_audio, fs
+    anti_output_audio = -output_audio.copy()
+    finaly_out = anti_output_audio + base_audio.copy()
+
+    return finaly_out, fs

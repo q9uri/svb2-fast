@@ -258,6 +258,12 @@ wheels = [
 ]
 
 [[package]]
+name = "antlr4-python3-runtime"
+version = "4.9.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz", hash = "sha256:f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b", size = 117034, upload-time = "2021-11-06T17:52:23.524Z" }
+
+[[package]]
 name = "anyio"
 version = "4.12.0"
 source = { registry = "https://pypi.org/simple" }
@@ -372,6 +378,23 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a1/4a/874ecf9b472f998130c2b5e145dcdb9f6131e84786111489103b66772143/audioread-3.1.0.tar.gz", hash = "sha256:1c4ab2f2972764c896a8ac61ac53e261c8d29f0c6ccd652f84e18f08a4cab190", size = 20082, upload-time = "2025-10-26T19:44:13.484Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7e/16/fbe8e1e185a45042f7cd3a282def5bb8d95bb69ab9e9ef6a5368aa17e426/audioread-3.1.0-py3-none-any.whl", hash = "sha256:b30d1df6c5d3de5dcef0fb0e256f6ea17bdcf5f979408df0297d8a408e2971b4", size = 23143, upload-time = "2025-10-26T19:44:12.016Z" },
+]
+
+[[package]]
+name = "audioseal"
+version = "0.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "einops" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "numpy", version = "2.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+    { name = "omegaconf" },
+    { name = "torch", version = "2.9.1", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine != 'x86_64' and sys_platform == 'linux') or (sys_platform != 'linux' and sys_platform != 'win32')" },
+    { name = "torch", version = "2.9.1+cu128", source = { registry = "https://download.pytorch.org/whl/cu128" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux') or sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ba/63/7012f074ee592184c5dd2fd119b64b25233bbcc466c803e9d4bf95c64086/audioseal-0.2.0.tar.gz", hash = "sha256:569a16eb898748ea7f3f5d485e094e21ddcebd68314ad873051a79e9e5b708ae", size = 2572957, upload-time = "2025-12-17T13:43:00.651Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/06/6c/c8875d5e2e8b6b9cb06f483df35b81a2644e793dadd050b33b2d8a8e941d/audioseal-0.2.0-py3-none-any.whl", hash = "sha256:a5989d1e831177e09ba94ec6789ad28ffbd75a2b64e4463a44d92b81f72faf75", size = 63304, upload-time = "2025-12-17T13:42:57.525Z" },
 ]
 
 [[package]]
@@ -2812,6 +2835,19 @@ wheels = [
 ]
 
 [[package]]
+name = "omegaconf"
+version = "2.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "antlr4-python3-runtime" },
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/09/48/6388f1bb9da707110532cb70ec4d2822858ddfb44f1cdf1233c20a80ea4b/omegaconf-2.3.0.tar.gz", hash = "sha256:d5d4b6d29955cc50ad50c46dc269bcd92c6e00f5f90d23ab5fee7bfca4ba4cc7", size = 3298120, upload-time = "2022-12-08T20:59:22.753Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl", hash = "sha256:7b4df175cdb08ba400f45cae3bdcae7ba8365db4d165fc65fd04b050ab63b46b", size = 79500, upload-time = "2022-12-08T20:59:19.686Z" },
+]
+
+[[package]]
 name = "onnx"
 version = "1.20.0"
 source = { registry = "https://pypi.org/simple" }
@@ -4214,6 +4250,20 @@ wheels = [
 ]
 
 [[package]]
+name = "resampy"
+version = "0.4.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numba" },
+    { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.11'" },
+    { name = "numpy", version = "2.3.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/29/f1/34be702a69a5d272e844c98cee82351f880985cfbca0cc86378011078497/resampy-0.4.3.tar.gz", hash = "sha256:a0d1c28398f0e55994b739650afef4e3974115edbe96cd4bb81968425e916e47", size = 3080604, upload-time = "2024-03-05T20:36:08.119Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4d/b9/3b00ac340a1aab3389ebcc52c779914a44aadf7b0cb7a3bf053195735607/resampy-0.4.3-py3-none-any.whl", hash = "sha256:ad2ed64516b140a122d96704e32bc0f92b23f45419e8b8f478e5a05f83edcebd", size = 3076529, upload-time = "2024-03-05T20:36:02.439Z" },
+]
+
+[[package]]
 name = "rich"
 version = "14.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -4890,6 +4940,7 @@ version = "2.7.0"
 source = { editable = "." }
 dependencies = [
     { name = "aivmlib" },
+    { name = "audioseal" },
     { name = "cmudict" },
     { name = "cn2an" },
     { name = "e2k" },
@@ -4907,9 +4958,11 @@ dependencies = [
     { name = "pypinyin" },
     { name = "pyworld-prebuilt" },
     { name = "safetensors" },
+    { name = "setuptools" },
     { name = "sudachidict-core" },
     { name = "sudachipy" },
     { name = "transformers" },
+    { name = "wavmark" },
 ]
 
 [package.optional-dependencies]
@@ -5075,6 +5128,7 @@ webui = [
 requires-dist = [
     { name = "accelerate", marker = "extra == 'torch'" },
     { name = "aivmlib" },
+    { name = "audioseal" },
     { name = "cmudict" },
     { name = "cn2an" },
     { name = "e2k", git = "https://github.com/tsukumijima/e2k.git?rev=9920754e15d8c96404bef0bd81d424352fb7a48b" },
@@ -5095,11 +5149,13 @@ requires-dist = [
     { name = "pypinyin" },
     { name = "pyworld-prebuilt", specifier = ">=0.3.5.post2" },
     { name = "safetensors" },
+    { name = "setuptools" },
     { name = "sudachidict-core" },
     { name = "sudachipy" },
     { name = "torch", marker = "(platform_machine == 'x86_64' and sys_platform == 'linux' and extra == 'torch') or (sys_platform == 'win32' and extra == 'torch')", specifier = ">=2.1", index = "https://download.pytorch.org/whl/cu128" },
     { name = "torch", marker = "(platform_machine != 'x86_64' and sys_platform == 'linux' and extra == 'torch') or (sys_platform != 'linux' and sys_platform != 'win32' and extra == 'torch')", specifier = ">=2.1" },
     { name = "transformers", specifier = "<4.50.0" },
+    { name = "wavmark" },
 ]
 provides-extras = ["onnxruntime", "torch"]
 
@@ -5887,6 +5943,25 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c3/d1/8f3c683c9561a4e6689dd3b1d345c815f10f86acd044ee1fb9a4dcd0b8c5/uvicorn-0.40.0.tar.gz", hash = "sha256:839676675e87e73694518b5574fd0f24c9d97b46bea16df7b8c05ea1a51071ea", size = 81761, upload-time = "2025-12-21T14:16:22.45Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3d/d8/2083a1daa7439a66f3a48589a57d576aa117726762618f6bb09fe3798796/uvicorn-0.40.0-py3-none-any.whl", hash = "sha256:c6c8f55bc8bf13eb6fa9ff87ad62308bbbc33d0b67f84293151efe87e0d5f2ee", size = 68502, upload-time = "2025-12-21T14:16:21.041Z" },
+]
+
+[[package]]
+name = "wavmark"
+version = "0.0.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "huggingface-hub" },
+    { name = "librosa" },
+    { name = "resampy" },
+    { name = "torch", version = "2.9.1", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine != 'x86_64' and sys_platform == 'linux') or (sys_platform != 'linux' and sys_platform != 'win32')" },
+    { name = "torch", version = "2.9.1+cu128", source = { registry = "https://download.pytorch.org/whl/cu128" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux') or sys_platform == 'win32'" },
+    { name = "torchaudio", version = "2.9.1", source = { registry = "https://pypi.org/simple" }, marker = "(platform_machine != 'x86_64' and sys_platform == 'linux') or (sys_platform != 'linux' and sys_platform != 'win32')" },
+    { name = "torchaudio", version = "2.9.1+cu128", source = { registry = "https://download.pytorch.org/whl/cu128" }, marker = "(platform_machine == 'x86_64' and sys_platform == 'linux') or sys_platform == 'win32'" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/26/46/31acbe081fe7822a26af90e7e9f2160daa01bcf78cc94b2f46132c9b9adc/wavmark-0.0.3.tar.gz", hash = "sha256:64e5773d7c1bf07d31fe92375fa921f6e5c511a560a8a523c449626adcdeaa0f", size = 564521, upload-time = "2024-01-07T07:46:10.273Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/46/dd/b929dff997313091c60a93df26b82f400267c17a425bd1b4666f1761ad34/wavmark-0.0.3-py3-none-any.whl", hash = "sha256:f77c7234e66b6983273fa7bd7509acaa9195cd936fd1c178b46c8e996d7e8f02", size = 13921, upload-time = "2024-01-07T07:46:07.487Z" },
 ]
 
 [[package]]

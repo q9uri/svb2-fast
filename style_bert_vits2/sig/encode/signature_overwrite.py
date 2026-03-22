@@ -1,7 +1,7 @@
 #q9uri lgpl3 license
 import numpy as np
 
-def remove_voice(input_audio: np.ndarray, key:str, fs:int = 44100) -> tuple[np.ndarray, int]:
+def overwrite_sig(input_audio: np.ndarray, key:str, fs:int = 44100) -> tuple[np.ndarray, int]:
     base_audio = input_audio
     interval = 0.1
     unit_duration = interval / 12
@@ -52,9 +52,11 @@ def remove_voice(input_audio: np.ndarray, key:str, fs:int = 44100) -> tuple[np.n
         if end_sample > len(output_audio):
             break
 
-        output_audio[start_sample:end_sample] -= signal
+        anti_signal = -signal
+        output_audio[start_sample:end_sample] += anti_signal
         idx += 1
 
-    finaly_out = base_audio.copy() - output_audio.copy()
+    anti_base_audio = -output_audio.copy()
+    output_audio = base_audio.copy() + anti_base_audio
 
-    return finaly_out, fs
+    return output_audio, fs
