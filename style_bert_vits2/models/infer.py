@@ -14,7 +14,7 @@ from style_bert_vits2.models import commons, utils
 from style_bert_vits2.models.hyper_parameters import HyperParameters
 from style_bert_vits2.models.infer_onnx import TokenDurationsResult
 from style_bert_vits2.models.models import SynthesizerTrn
-from style_bert_vits2.models.models_jp_extra import (
+from style_bert_vits2.models.models_jp2_extra import (
     SynthesizerTrn as SynthesizerTrnJPExtra,
 )
 from style_bert_vits2.models.models_nanairo import (
