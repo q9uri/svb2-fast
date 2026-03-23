@@ -229,7 +229,7 @@ class MultiHeadAttention(nn.Module):
         p_dropout: float = 0.0,
         window_size: int | None = None,
         heads_share: bool = True,
-        block_length: int | None = None,
+        block_length: int | None = 64,
         proximal_bias: bool = False,
         proximal_init: bool = False,
     ) -> None:
