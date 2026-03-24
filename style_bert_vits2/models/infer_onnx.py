@@ -141,97 +141,115 @@ def infer_onnx(
     """
     ONNX 版音声合成モデルの推論を実行する関数。
     """
-    is_jp_extra_like_model = hps.is_jp_extra_like_model()
-    # テキストから BERT 特徴量・音素列・アクセント列・言語 ID を取得
-    # zh_bert, ja_bert, en_bert のうち、指定された言語に対応する1つのみが実際の特徴量を持ち、残りの2つは空のテンソルになる
-    zh_bert, ja_bert, en_bert, phones, tones, lang_ids = get_text_onnx(
-        text,
-        language,
-        hps,
-        onnx_providers=onnx_providers,
-        assist_text=assist_text,
-        assist_text_weight=assist_text_weight,
-        given_phone=given_phone,
-        given_tone=given_tone,
-        jtalk=jtalk,
-    )
-    if skip_start:
-        phones = phones[3:]
-        tones = tones[3:]
-        lang_ids = lang_ids[3:]
-        zh_bert = zh_bert[:, 3:]
-        ja_bert = ja_bert[:, 3:]
-        en_bert = en_bert[:, 3:]
-    if skip_end:
-        phones = phones[:-2]
-        tones = tones[:-2]
-        lang_ids = lang_ids[:-2]
-        zh_bert = zh_bert[:, :-2]
-        ja_bert = ja_bert[:, :-2]
-        en_bert = en_bert[:, :-2]
 
-    x_tst = np.expand_dims(phones, axis=0)
-    tones = np.expand_dims(tones, axis=0)
-    lang_ids = np.expand_dims(lang_ids, axis=0)
-    zh_bert = np.expand_dims(zh_bert, axis=0)
-    ja_bert = np.expand_dims(ja_bert, axis=0)
-    en_bert = np.expand_dims(en_bert, axis=0)
-    x_tst_lengths = np.array([phones.shape[0]], dtype=np.int64)
-    style_vec_tensor = np.expand_dims(style_vec, axis=0)
-    del phones
-    sid_tensor = np.array([sid], dtype=np.int64)
+    SPACE_LIST = ["、", "。", ",", "　", " " ]
 
-    input_names = [input.name for input in onnx_session.get_inputs()]
-    output_name = onnx_session.get_outputs()[0].name
-    if is_jp_extra_like_model:
-        input_tensor = [
-            x_tst,
-            x_tst_lengths,
-            sid_tensor,
-            tones,
-            lang_ids,
-            ja_bert,
-            style_vec_tensor,
-            np.array(length_scale, dtype=np.float32),
-            np.array(sdp_ratio, dtype=np.float32),
-            np.array(noise_scale, dtype=np.float32),
-            np.array(noise_scale_w, dtype=np.float32),
-        ]
-    else:
-        input_tensor = [
-            x_tst,
-            x_tst_lengths,
-            sid_tensor,
-            tones,
-            lang_ids,
-            zh_bert,
-            ja_bert,
-            en_bert,
-            style_vec_tensor,
-            np.array(length_scale, dtype=np.float32),
-            np.array(sdp_ratio, dtype=np.float32),
-            np.array(noise_scale, dtype=np.float32),
-            np.array(noise_scale_w, dtype=np.float32),
-        ]
+    for chr in SPACE_LIST:
+        text = text.replace(chr, "、")
 
-    # 入力テンソルの転送に使用するデバイス種別, デバイス ID, 実行オプションを取得
-    device_type, device_id, run_options = get_onnx_device_options(onnx_session, onnx_providers)  # fmt: skip
+    if len(text) > 2 and text[len(text)-1] == "、":
+        text = text[:-1]
 
-    # 推論デバイスに入力テンソルを割り当て
-    ## GPU 推論の場合、device_type + device_id に対応する GPU デバイスに入力テンソルが割り当てられる
-    io_binding = onnx_session.io_binding()
-    for name, value in zip(input_names, input_tensor):
-        gpu_tensor = onnxruntime.OrtValue.ortvalue_from_numpy(
-            value, device_type, device_id
+    while "、、" in text:
+        text = text.replace("、、", "、")
+
+    text_list = text.split("、")
+    audio_list = []
+
+    for cur_text in text_list:
+        is_jp_extra_like_model = hps.is_jp_extra_like_model()
+        # テキストから BERT 特徴量・音素列・アクセント列・言語 ID を取得
+        # zh_bert, ja_bert, en_bert のうち、指定された言語に対応する1つのみが実際の特徴量を持ち、残りの2つは空のテンソルになる
+        zh_bert, ja_bert, en_bert, phones, tones, lang_ids = get_text_onnx(
+            cur_text,
+            language,
+            hps,
+            onnx_providers=onnx_providers,
+            assist_text=assist_text,
+            assist_text_weight=assist_text_weight,
+            given_phone=given_phone,
+            given_tone=given_tone,
+            jtalk=jtalk,
         )
-        io_binding.bind_ortvalue_input(name, gpu_tensor)
+        if skip_start:
+            phones = phones[3:]
+            tones = tones[3:]
+            lang_ids = lang_ids[3:]
+            zh_bert = zh_bert[:, 3:]
+            ja_bert = ja_bert[:, 3:]
+            en_bert = en_bert[:, 3:]
+        if skip_end:
+            phones = phones[:-2]
+            tones = tones[:-2]
+            lang_ids = lang_ids[:-2]
+            zh_bert = zh_bert[:, :-2]
+            ja_bert = ja_bert[:, :-2]
+            en_bert = en_bert[:, :-2]
 
-    # 推論の実行
-    io_binding.bind_output(output_name, device_type)
-    onnx_session.run_with_iobinding(io_binding, run_options=run_options)
-    output = io_binding.get_outputs()
+        x_tst = np.expand_dims(phones, axis=0)
+        tones = np.expand_dims(tones, axis=0)
+        lang_ids = np.expand_dims(lang_ids, axis=0)
+        zh_bert = np.expand_dims(zh_bert, axis=0)
+        ja_bert = np.expand_dims(ja_bert, axis=0)
+        en_bert = np.expand_dims(en_bert, axis=0)
+        x_tst_lengths = np.array([phones.shape[0]], dtype=np.int64)
+        style_vec_tensor = np.expand_dims(style_vec, axis=0)
+        del phones
+        sid_tensor = np.array([sid], dtype=np.int64)
 
-    audio = output[0].numpy()[0, 0]
+        input_names = [input.name for input in onnx_session.get_inputs()]
+        output_name = onnx_session.get_outputs()[0].name
+        if is_jp_extra_like_model:
+            input_tensor = [
+                x_tst,
+                x_tst_lengths,
+                sid_tensor,
+                tones,
+                lang_ids,
+                ja_bert,
+                style_vec_tensor,
+                np.array(length_scale, dtype=np.float32),
+                np.array(sdp_ratio, dtype=np.float32),
+                np.array(noise_scale, dtype=np.float32),
+                np.array(noise_scale_w, dtype=np.float32),
+            ]
+        else:
+            input_tensor = [
+                x_tst,
+                x_tst_lengths,
+                sid_tensor,
+                tones,
+                lang_ids,
+                zh_bert,
+                ja_bert,
+                en_bert,
+                style_vec_tensor,
+                np.array(length_scale, dtype=np.float32),
+                np.array(sdp_ratio, dtype=np.float32),
+                np.array(noise_scale, dtype=np.float32),
+                np.array(noise_scale_w, dtype=np.float32),
+            ]
+
+        # 入力テンソルの転送に使用するデバイス種別, デバイス ID, 実行オプションを取得
+        device_type, device_id, run_options = get_onnx_device_options(onnx_session, onnx_providers)  # fmt: skip
+
+        # 推論デバイスに入力テンソルを割り当て
+        ## GPU 推論の場合、device_type + device_id に対応する GPU デバイスに入力テンソルが割り当てられる
+        io_binding = onnx_session.io_binding()
+        for name, value in zip(input_names, input_tensor):
+            gpu_tensor = onnxruntime.OrtValue.ortvalue_from_numpy(
+                value, device_type, device_id
+            )
+            io_binding.bind_ortvalue_input(name, gpu_tensor)
+
+        # 推論の実行
+        io_binding.bind_output(output_name, device_type)
+        onnx_session.run_with_iobinding(io_binding, run_options=run_options)
+        output = io_binding.get_outputs()
+
+        audio = output[0].numpy()[0, 0]
+
+        audio_list.append(audio)
 
     del (
         x_tst,
@@ -244,5 +262,6 @@ def infer_onnx(
         en_bert,
         style_vec,
     )
+    audio = np.concatenate(audio_list, axis=0)
 
     return audio
