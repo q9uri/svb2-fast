@@ -54,28 +54,23 @@ def extract_bert_feature(
 
     if device == "cuda" and not torch.cuda.is_available():
         device = "cpu"
-    model = bert_models.load_model(Languages.JP2, device_map=device)
-    bert_models.transfer_model(Languages.JP2, device)
+    model = bert_models.load_model(Languages.JP, device_map=device)
+    bert_models.transfer_model(Languages.JP, device)
 
     style_res_mean = None
     with torch.no_grad():
-        tokenizer = bert_models.load_tokenizer(Languages.JP2)
-        if assist_text:
-            inputs = tokenizer(assist_text, return_tensors="pt")
-        else:
-            inputs = tokenizer(text, return_tensors="pt")
-        for i in inputs:
-            inputs[i] = inputs[i].to(device)  # type: ignore
-        res = model(**inputs, output_hidden_states=True)
-        res = torch.cat(res["hidden_states"][-3:-2], -1)[0]
+        res = model.encode(text, convert_to_tensor=True, device=str(device))
 
-        res = torch.mean(res, dim=0, keepdim=True).to(res.device)
+        # 2. 形状の調整
+        if res.ndim == 1:
+            res = res.unsqueeze(0)
+
         total_padding = len(word2ph) - len(res)
 
         padding = torch.zeros((total_padding, res.shape[1]), dtype=res.dtype, device=res.device)
         res = torch.cat([res, padding], 0).to(res.device)
 
-        linear_transform = torch.nn.Linear(in_features=256, out_features=1024).to(res.device)
+        linear_transform = torch.nn.Linear(in_features=512, out_features=1024).to(res.device)
 
         # 変換を実行
         res = linear_transform(res).to(res.device)
@@ -128,9 +123,9 @@ def extract_bert_feature_onnx(
         assist_text = "".join(text_to_sep_kata(assist_text, raise_yomi_error=False)[0])
 
     # トークナイザーとモデルの読み込み
-    tokenizer = onnx_bert_models.load_tokenizer(Languages.JP2)
+    tokenizer = onnx_bert_models.load_tokenizer(Languages.JP)
     session = onnx_bert_models.load_model(
-        language=Languages.JP2,
+        language=Languages.JP,
         onnx_providers=onnx_providers,
     )
     input_names = [input.name for input in session.get_inputs()]
@@ -166,7 +161,7 @@ def extract_bert_feature_onnx(
     # --- Linear Transformation ---
     # You'll need the weight and bias from your PyTorch linear_transform.
     # For this example, let's create dummy weight and bias
-    in_features = 256
+    in_features = 512
     out_features = 1024
     linear_transform_weight = np.random.rand(out_features, in_features)  # PyTorch weight is [out, in]
     linear_transform_bias = np.random.rand(out_features)  # PyTorch bias is [out]

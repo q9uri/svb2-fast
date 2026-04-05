@@ -19,7 +19,6 @@ class DisableCompileContextManager:
 
 def export():
     onnx_temp_model_path= "./bert/ruri-v3-30m-onnx/model.onnx"
-    #'./model.onnx'
     onnx_fp16_model_path = "./bert/ruri-v3-30m-onnx/model_fp16.onnx"
 
     class ONNXBert(nn.Module):

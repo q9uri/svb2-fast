@@ -8,8 +8,8 @@ from torch.nn import functional as F
 from torch.nn.utils import remove_weight_norm, weight_norm
 
 from style_bert_vits2.models import commons
-from style_bert_vits2.models.attentions_fast import Encoder
-from style_bert_vits2.models.transforms import piecewise_rational_quadratic_transform
+from style_bert_vits2.models.convert.attentions import Encoder
+from style_bert_vits2.models.convert.transforms import piecewise_rational_quadratic_transform
 
 
 LRELU_SLOPE = 0.1

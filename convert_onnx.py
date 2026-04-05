@@ -45,12 +45,12 @@ from style_bert_vits2.constants import (
     DEFAULT_STYLE_WEIGHT,
     Languages,
 )
-from style_bert_vits2.models.infer_convert import get_text
+from style_bert_vits2.models.convert.infer import get_text
 from style_bert_vits2.models.models import SynthesizerTrn
-from style_bert_vits2.models.models_jp_extra import (
+from style_bert_vits2.models.convert.models_jp_extra import (
     SynthesizerTrn as SynthesizerTrnJPExtra,
 )
-from style_bert_vits2.tts_model_convert import TTSModel
+from style_bert_vits2.models.convert.tts_model import TTSModel
 
 
 def generate_aivm_metadata(
@@ -203,7 +203,7 @@ if __name__ == "__main__":
             noise_scale = torch.tensor(0.667)
             noise_scale_w = torch.tensor(0.8)
 
-            with open(config_path, "r") as f:
+            with open(config_path, "r", encoding="utf-8") as f:
                 config = json.load(f)
             use_jpextra = config["data"]["use_jp_extra"]
 

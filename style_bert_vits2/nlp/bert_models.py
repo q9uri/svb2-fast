@@ -21,8 +21,9 @@ from transformers import (
     DebertaV2TokenizerFast,
     PreTrainedModel,
     PreTrainedTokenizer,
-    PreTrainedTokenizerFast,
+    PreTrainedTokenizerFast
 )
+from sentence_transformers import SentenceTransformer
 
 from style_bert_vits2.constants import DEFAULT_BERT_MODEL_PATHS, Languages
 from style_bert_vits2.logging import logger
@@ -34,7 +35,7 @@ if TYPE_CHECKING:
 
 
 # 各言語ごとのロード済みの BERT モデルを格納する辞書
-__loaded_models: dict[Languages, PreTrainedModel | DebertaV2Model] = {}
+__loaded_models: dict[Languages, PreTrainedModel | DebertaV2Model | SentenceTransformer] = {}
 
 # 各言語ごとのロード済みモデルの精度情報を格納する辞書
 __loaded_model_dtypes: dict[Languages, Literal["fp32", "fp16", "int8"]] = {}
@@ -60,7 +61,7 @@ def load_model(
     use_int8: bool = False,
     llm_int8_threshold: float = 6.0,
     llm_int8_skip_modules: list[str] | None = None,
-) -> PreTrainedModel | DebertaV2Model:
+) -> PreTrainedModel | DebertaV2Model | SentenceTransformer:
     """
     指定された言語の BERT モデルをロードし、ロード済みの BERT モデルを返す。
     一度ロードされていれば、ロード済みの BERT モデルを即座に返す。
@@ -143,7 +144,13 @@ def load_model(
     # BERT モデルをロードし、辞書に格納して返す
     ## 日本語1または英語のみ DebertaV2Model でロードする必要がある
     start_time = time.time()
-    if language == Languages.JP or language == Languages.EN:
+    if language == Languages.JP:
+        __loaded_models[language] = SentenceTransformer(
+            pretrained_model_name_or_path,
+            revision=revision,
+        )
+
+    elif language == Languages.EN:
         __loaded_models[language] = DebertaV2Model.from_pretrained(
             pretrained_model_name_or_path,
             device_map=device_map,

@@ -49,7 +49,8 @@ def extract_bert_feature(
     """
 
     if language == Languages.JP:
-        from style_bert_vits2.nlp.japanese.bert_feature import extract_bert_feature
+
+        from style_bert_vits2.nlp.japanese.bert_feature3 import extract_bert_feature
 
         return extract_bert_feature(
             text,
@@ -59,18 +60,6 @@ def extract_bert_feature(
             assist_text_weight,
             sep_text,  # 日本語のみ sep_text を指定する
         )
-    elif language == Languages.JP2:
-        from style_bert_vits2.nlp.japanese.bert_feature2 import extract_bert_feature
-
-        return extract_bert_feature(
-            text,
-            word2ph,
-            device,
-            assist_text,
-            assist_text_weight,
-            sep_text,  # 日本語のみ sep_text を指定する
-        )
-
     elif language == Languages.EN:
         from style_bert_vits2.nlp.english.bert_feature import extract_bert_feature
 
@@ -121,7 +110,8 @@ def extract_bert_feature_onnx(
     """
 
     if language == Languages.JP:
-        from style_bert_vits2.nlp.japanese.bert_feature import extract_bert_feature_onnx
+
+        from style_bert_vits2.nlp.japanese.bert_feature3 import extract_bert_feature_onnx
 
         return extract_bert_feature_onnx(
             text,
@@ -131,17 +121,7 @@ def extract_bert_feature_onnx(
             assist_text_weight,
             sep_text,  # 日本語のみ sep_text を指定する
         )
-    elif language == Languages.JP2:
-        from style_bert_vits2.nlp.japanese.bert_feature2 import extract_bert_feature_onnx
 
-        return extract_bert_feature_onnx(
-            text,
-            word2ph,
-            onnx_providers,
-            assist_text,
-            assist_text_weight,
-            sep_text,  # 日本語のみ sep_text を指定する
-        )
     elif language == Languages.EN:
         from style_bert_vits2.nlp.english.bert_feature import extract_bert_feature_onnx
 
@@ -205,7 +185,7 @@ def _clean_text(
     """
 
     # Changed to import inside if condition to avoid unnecessary import
-    if language in (Languages.JP, Languages.JP2):
+    if language == Languages.JP:
         from style_bert_vits2.nlp.japanese.g2p import g2p
         from style_bert_vits2.nlp.japanese.normalizer import normalize_text
 
@@ -438,9 +418,6 @@ def cleaned_text_to_sequence(
     Returns:
         tuple[list[int], list[int], list[int]]: List of integers corresponding to the symbols in the text
     """
-
-    if language == Languages.JP2:
-        language = Languages.JP
 
     phones = [__symbol_to_id[symbol] for symbol in cleaned_phones]
     tone_start = LANGUAGE_TONE_START_MAP[language]

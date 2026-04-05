@@ -28,7 +28,8 @@
   },
   "data": {
     "use_jp_extra": true,
-    "use_jp2_extra": true,
+    "use_jp2_extra": false,
+    "use_jp3_extra": true,
     "training_files": "Data/Dummy/train.list",
     "validation_files": "Data/Dummy/val.list",
     "max_wav_value": 32768.0,

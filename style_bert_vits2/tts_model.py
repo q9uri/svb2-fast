@@ -94,6 +94,12 @@ class TTSModel:
         else:
             self.is_onnx_model = False
 
+        # ExecuTorch 形式のモデルかどうか
+        if self.model_path.suffix in [".pte"]:
+            self.is_executorch_model = True
+        else:
+            self.is_executorch_model = False
+
         # ハイパーパラメータの Pydantic モデルが直接指定された
         if isinstance(config_path, HyperParameters):
             self.config_path: Path = Path("")  # 互換性のため空の Path を設定
@@ -143,6 +149,7 @@ class TTSModel:
         ) = None
         self.null_model_params: dict[int, NullModelParam] | None = None
 
+        self.method = None
         # onnx_session は ONNX 推論時のみ遅延初期化される
         self.onnx_session: onnxruntime.InferenceSession | None = None
 
@@ -153,8 +160,53 @@ class TTSModel:
 
         start_time = time.time()
 
+
+        # ONNX 推論時
+        if self.is_onnx_model:
+            # 推論時に一番優先される ExecutionProvider の名前を取得
+            assert len(self.onnx_providers) > 0
+            first_provider_name = (
+                self.onnx_providers[0]
+                if type(self.onnx_providers[0]) is str
+                else self.onnx_providers[0][0]
+            )
+
+            # 推論セッションの設定
+            sess_options = onnxruntime.SessionOptions()
+            ## ONNX モデルの作成時にすでに onnxsim により最適化されていることから、ロード高速化のため最適化を無効にする
+            ## DmlExecutionProvider が先頭に指定されているときのみ、DirectML 推論の高速化のためすべての最適化を有効にする
+            if first_provider_name == "DmlExecutionProvider":
+                sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL  # fmt: skip
+            else:
+                sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_DISABLE_ALL  # fmt: skip
+            ## エラー以外のログを出力しない
+            ## 本来は log_severity_level = 3 だけで効くはずだが、なぜか CUDA 系のログが抑制できないので set_default_logger_severity() も呼び出している
+            sess_options.log_severity_level = 3
+            onnxruntime.set_default_logger_severity(3)
+
+            # ONNX モデルをロードし、推論セッションを初期化
+            self.onnx_session = onnxruntime.InferenceSession(
+                str(self.model_path),
+                sess_options=sess_options,
+                providers=self.onnx_providers,
+            )
+            logger.info(
+                f"Model loaded successfully from {self.model_path} to {self.onnx_session.get_providers()[0]} ({time.time() - start_time:.2f}s)"
+            )
+
+        # ExecuTorch推論時
+        elif self.is_executorch_model:
+            import executorch.backends.xnnpack
+            from executorch.runtime import Runtime
+
+            runtime = Runtime.get()
+            self.method = runtime.load_program(self.model_path).load_method("forward")
+            logger.info(
+                f'Model loaded successfully from {self.model_path} to cpu device ({time.time() - start_time:.2f}s)'
+            )
+
         # PyTorch 推論時
-        if not self.is_onnx_model:
+        else:
             from style_bert_vits2.models.infer import get_net_g
 
             # PyTorch モデルをロード
@@ -209,42 +261,10 @@ class TTSModel:
                 for v in params:
                     v[0].data.add_(v[1].data, alpha=float(null_model_info.tempo))
 
-            logger.info(
-                f"Null models merged successfully ({time.time() - start_time:.2f}s)"
-            )
+                logger.info(
+                    f"Null models merged successfully ({time.time() - start_time:.2f}s)"
+                )
 
-        # ONNX 推論時
-        else:
-            # 推論時に一番優先される ExecutionProvider の名前を取得
-            assert len(self.onnx_providers) > 0
-            first_provider_name = (
-                self.onnx_providers[0]
-                if type(self.onnx_providers[0]) is str
-                else self.onnx_providers[0][0]
-            )
-
-            # 推論セッションの設定
-            sess_options = onnxruntime.SessionOptions()
-            ## ONNX モデルの作成時にすでに onnxsim により最適化されていることから、ロード高速化のため最適化を無効にする
-            ## DmlExecutionProvider が先頭に指定されているときのみ、DirectML 推論の高速化のためすべての最適化を有効にする
-            if first_provider_name == "DmlExecutionProvider":
-                sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_ENABLE_ALL  # fmt: skip
-            else:
-                sess_options.graph_optimization_level = onnxruntime.GraphOptimizationLevel.ORT_DISABLE_ALL  # fmt: skip
-            ## エラー以外のログを出力しない
-            ## 本来は log_severity_level = 3 だけで効くはずだが、なぜか CUDA 系のログが抑制できないので set_default_logger_severity() も呼び出している
-            sess_options.log_severity_level = 3
-            onnxruntime.set_default_logger_severity(3)
-
-            # ONNX モデルをロードし、推論セッションを初期化
-            self.onnx_session = onnxruntime.InferenceSession(
-                str(self.model_path),
-                sess_options=sess_options,
-                providers=self.onnx_providers,
-            )
-            logger.info(
-                f"Model loaded successfully from {self.model_path} to {self.onnx_session.get_providers()[0]} ({time.time() - start_time:.2f}s)"
-            )
 
     def unload(self) -> None:
         """
@@ -269,6 +289,10 @@ class TTSModel:
         if self.onnx_session is not None:
             del self.onnx_session
             self.onnx_session = None
+
+        if self.is_executorch_model is not None:
+            del self.is_executorch_model
+            self.is_executorch_model = None
 
         gc.collect()
         logger.info(f"Model unloaded successfully ({time.time() - start_time:.2f}s)")
@@ -531,13 +555,13 @@ class TTSModel:
         """
 
         logger.info(f"Start generating audio data from text:\n{text}")
-        if language not in ("JP", "JP2") and self.hyper_parameters.is_jp_extra_like_model():
+        if language not in ("JP") and self.hyper_parameters.is_jp_extra_like_model():
             raise ValueError(
                 "The model is trained with JP-Extra or Nanairo, but the language is not JP"
             )
         else:
-            if self.hyper_parameters.is_jp2_extra_like_model():
-                language = Languages.JP2
+            language = Languages.JP
+
 
         if reference_audio_path == "":
             reference_audio_path = None
@@ -561,7 +585,159 @@ class TTSModel:
 
         # PyTorch 推論時
         start_time = time.time()
-        if not self.is_onnx_model:
+
+        if self.is_executorch_model:
+            from style_bert_vits2.models.infer_executorch import infer
+            import torch
+
+
+            self.null_model_params = None
+
+            # force_reload_model が True のとき、メモリ上に保持されているモデルを破棄する
+            if force_reload_model is True:
+                self.method = None
+
+            # モデルがロードされていない場合はロードする
+            if self.method is None:
+                self.load()
+            assert self.method is not None
+
+            # 通常のテキストから音声を生成
+            if not line_split:
+                with torch.inference_mode():
+                    audio = infer(
+                        text=text,
+                        sdp_ratio=sdp_ratio,
+                        noise_scale=noise,
+                        noise_scale_w=noise_w,
+                        length_scale=length,
+                        sid=speaker_id,
+                        language=language,
+                        hps=self.hyper_parameters,
+                        method=self.method,
+                        device=self.device,
+                        assist_text=assist_text,
+                        assist_text_weight=assist_text_weight,
+                        style_vec=style_vector,
+                        given_phone=given_phone,
+                        given_phone_length=given_phone_length,
+                        given_tone=given_tone,
+                        use_fp16=self.use_fp16,
+                        external_speaker_embedding=external_speaker_embedding,
+                        g_adjust=g_adjust,
+                    )
+
+            # 改行ごとに分割して音声を生成
+            else:
+                texts = [t for t in text.split("\n") if t != ""]
+                audios = []
+                with torch.inference_mode():
+                    for i, t in enumerate(texts):
+                        audios.append(
+                            # given_phone/given_phone_length/given_tone は改行ごとに分割する際は渡さない
+                            infer(
+                                text=t,
+                                sdp_ratio=sdp_ratio,
+                                noise_scale=noise,
+                                noise_scale_w=noise_w,
+                                length_scale=length,
+                                sid=speaker_id,
+                                language=language,
+                                hps=self.hyper_parameters,
+                                method=self.method,
+                                device=self.device,
+                                assist_text=assist_text,
+                                assist_text_weight=assist_text_weight,
+                                style_vec=style_vector,
+                                use_fp16=self.use_fp16,
+                                external_speaker_embedding=external_speaker_embedding,
+                                g_adjust=g_adjust,
+                            )
+                        )
+                        if i != len(texts) - 1:
+                            audios.append(
+                                np.zeros(
+                                    int(
+                                        self.hyper_parameters.data.sampling_rate
+                                        * split_interval
+                                    )
+                                )
+                            )
+                    audio = np.concatenate(audios)
+
+        # ONNX 推論時
+        elif self.is_onnx_model:
+            from style_bert_vits2.models.infer_onnx import infer_onnx
+
+            if given_phone_length is not None:
+                logger.warning(
+                    "given_phone_length is not supported for ONNX inference and will be ignored."
+                )
+
+            # force_reload_model が True のとき、メモリ上に保持されているモデルを破棄する
+            if force_reload_model is True:
+                self.onnx_session = None
+
+            # モデルがロードされていない場合はロードする
+            if self.onnx_session is None:
+                self.load()
+            assert self.onnx_session is not None
+
+            # 通常のテキストから音声を生成
+            if not line_split:
+                audio = infer_onnx(
+                    text=text,
+                    sdp_ratio=sdp_ratio,
+                    noise_scale=noise,
+                    noise_scale_w=noise_w,
+                    length_scale=length,
+                    sid=speaker_id,
+                    language=language,
+                    hps=self.hyper_parameters,
+                    onnx_session=self.onnx_session,
+                    onnx_providers=self.onnx_providers,
+                    assist_text=assist_text,
+                    assist_text_weight=assist_text_weight,
+                    style_vec=style_vector,
+                    given_phone=given_phone,
+                    given_tone=given_tone,
+                )
+
+            # 改行ごとに分割して音声を生成
+            else:
+                texts = [t for t in text.split("\n") if t != ""]
+                audios = []
+                for i, t in enumerate(texts):
+                    audios.append(
+                        # given_phone/given_phone_length/given_tone は改行ごとに分割する際は渡さない
+                        infer_onnx(
+                            text=t,
+                            sdp_ratio=sdp_ratio,
+                            noise_scale=noise,
+                            noise_scale_w=noise_w,
+                            length_scale=length,
+                            sid=speaker_id,
+                            language=language,
+                            hps=self.hyper_parameters,
+                            onnx_session=self.onnx_session,
+                            onnx_providers=self.onnx_providers,
+                            assist_text=assist_text,
+                            assist_text_weight=assist_text_weight,
+                            style_vec=style_vector,
+                        )
+                    )
+                    if i != len(texts) - 1:
+                        audios.append(
+                            np.zeros(
+                                int(
+                                    self.hyper_parameters.data.sampling_rate
+                                    * split_interval
+                                )
+                            )
+                        )
+                audio = np.concatenate(audios)
+
+        else:
             import torch
 
             from style_bert_vits2.models.infer import infer
@@ -642,78 +818,6 @@ class TTSModel:
                                 )
                             )
                     audio = np.concatenate(audios)
-
-        # ONNX 推論時
-        else:
-            from style_bert_vits2.models.infer_onnx import infer_onnx
-
-            if given_phone_length is not None:
-                logger.warning(
-                    "given_phone_length is not supported for ONNX inference and will be ignored."
-                )
-
-            # force_reload_model が True のとき、メモリ上に保持されているモデルを破棄する
-            if force_reload_model is True:
-                self.onnx_session = None
-
-            # モデルがロードされていない場合はロードする
-            if self.onnx_session is None:
-                self.load()
-            assert self.onnx_session is not None
-
-            # 通常のテキストから音声を生成
-            if not line_split:
-                audio = infer_onnx(
-                    text=text,
-                    sdp_ratio=sdp_ratio,
-                    noise_scale=noise,
-                    noise_scale_w=noise_w,
-                    length_scale=length,
-                    sid=speaker_id,
-                    language=language,
-                    hps=self.hyper_parameters,
-                    onnx_session=self.onnx_session,
-                    onnx_providers=self.onnx_providers,
-                    assist_text=assist_text,
-                    assist_text_weight=assist_text_weight,
-                    style_vec=style_vector,
-                    given_phone=given_phone,
-                    given_tone=given_tone,
-                )
-
-            # 改行ごとに分割して音声を生成
-            else:
-                texts = [t for t in text.split("\n") if t != ""]
-                audios = []
-                for i, t in enumerate(texts):
-                    audios.append(
-                        # given_phone/given_phone_length/given_tone は改行ごとに分割する際は渡さない
-                        infer_onnx(
-                            text=t,
-                            sdp_ratio=sdp_ratio,
-                            noise_scale=noise,
-                            noise_scale_w=noise_w,
-                            length_scale=length,
-                            sid=speaker_id,
-                            language=language,
-                            hps=self.hyper_parameters,
-                            onnx_session=self.onnx_session,
-                            onnx_providers=self.onnx_providers,
-                            assist_text=assist_text,
-                            assist_text_weight=assist_text_weight,
-                            style_vec=style_vector,
-                        )
-                    )
-                    if i != len(texts) - 1:
-                        audios.append(
-                            np.zeros(
-                                int(
-                                    self.hyper_parameters.data.sampling_rate
-                                    * split_interval
-                                )
-                            )
-                        )
-                audio = np.concatenate(audios)
 
         logger.info(
             f"Audio data generated successfully ({time.time() - start_time:.2f}s)"
@@ -800,7 +904,7 @@ class TTSModelHolder:
         for model_dir in model_dirs:
             if model_dir.name.startswith("."):
                 continue
-            suffixes = [".pth", ".pt", ".safetensors", ".aivm"]
+            suffixes = [".pth", ".pt", ".safetensors", ".aivm", ".pte"]
             if self.ignore_onnx is False:
                 suffixes.append(".onnx")
                 suffixes.append(".aivmx")

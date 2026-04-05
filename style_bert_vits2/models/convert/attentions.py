@@ -415,6 +415,7 @@ class MultiHeadAttention(nn.Module):
             )
         else:
             padded_relative_embeddings = relative_embeddings
+
         used_relative_embeddings = padded_relative_embeddings[
             :, slice_start_position:slice_end_position
         ]

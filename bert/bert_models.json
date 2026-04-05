@@ -1,4 +1,8 @@
 {
+    "sse-fast-ja": {
+        "repo_id": "RikkaBotan/quantized-stable-static-embedding-fast-retrieval-mrl-ja",
+        "files": ["model_rest.safetensors", "embedding.q4_k_m.bin"]
+    },
     "ruri-v3-30m": {
         "repo_id": "cl-nagoya/ruri-v3-30m",
         "files": ["model.safetensors", "tokenizer.model"]

@@ -33,7 +33,7 @@ from style_bert_vits2.voice import adjust_voice
 
 if TYPE_CHECKING:
     from style_bert_vits2.models.models import SynthesizerTrn
-    from style_bert_vits2.models.models_jp2_extra import (
+    from style_bert_vits2.models.convert.models_jp_extra import (
         SynthesizerTrn as SynthesizerTrnJPExtra,
     )
     from style_bert_vits2.models.models_nanairo import (
@@ -155,7 +155,7 @@ class TTSModel:
 
         # PyTorch 推論時
         if not self.is_onnx_model:
-            from style_bert_vits2.models.infer_convert import get_net_g
+            from style_bert_vits2.models.convert.infer import get_net_g
 
             # PyTorch モデルをロード
             self.net_g = get_net_g(
@@ -438,7 +438,7 @@ class TTSModel:
         if not self.is_onnx_model:
             import torch
 
-            from style_bert_vits2.models.infer_convert import predict_token_durations
+            from style_bert_vits2.models.convert.infer import predict_token_durations
 
             # force_reload_model が True のとき、メモリ上に保持されているモデルを破棄する
             if force_reload_model is True:
@@ -564,7 +564,7 @@ class TTSModel:
         if not self.is_onnx_model:
             import torch
 
-            from style_bert_vits2.models.infer_convert import infer
+            from style_bert_vits2.models.convert import infer
 
             if null_model_params is not None:
                 self.null_model_params = null_model_params

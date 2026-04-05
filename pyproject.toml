@@ -7,7 +7,7 @@ name = "style-bert-vits2"
 version = "2.7.0"
 description = "Style-Bert-VITS2: Bert-VITS2 with more controllable voice styles."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.13"
 license = "AGPL-3.0-only"
 license-files = ["LICENSE", "LGPL_LICENSE"]
 keywords = []
@@ -38,11 +38,7 @@ dependencies = [
     "num2words",
     "numpy>=2.0",
     "pydantic>=2.0",
-    #"pyopenjtalk-plus>=0.4.1.post7",
-    "jpreprocess",
-    "sudachidict-core",
-    "sudachipy",
-    "kanalizer",
+    "pyopenjtalk-plus>=0.4.1.post8",
     "pypinyin",
     "pyworld-prebuilt>=0.3.5.post2",
     "safetensors",
@@ -50,6 +46,7 @@ dependencies = [
     # ロード時にハングアップするため、やむを得ず当面の間 4.50.0 未満に固定する
     # ref: https://github.com/huggingface/transformers/issues/36803
     "transformers<4.50.0",
+    "sentence-transformers"
 ]
 
 # ライブラリ利用者向けのオプション依存関係
@@ -68,7 +65,7 @@ onnxruntime = [
 torch = [
     "accelerate",
     "numba",
-    "torch>=2.1",
+    "torch==2.9.1",
 ]
 
 # 単体利用時の依存関係グループ
@@ -87,7 +84,7 @@ core = [
     # PyTorch のバリアントは tool.uv.sources で torch / torchaudio のソース指定で固定している
     "accelerate",
     "numba",
-    "torch>=2.9.1,<2.10.0",
+    "torch==2.9.1",
     # 開発関連ツール
     # 比較的サイズが小さいため core に含める
     "coverage[toml]>=6.5",
@@ -106,6 +103,7 @@ tools = [
     "onnxsim-prebuilt>=0.4.39.post2",
     "protobuf>=4.25",
     "rich",
+    "onnxscript"
 ]
 ## FastAPI サーバーの依存関係 (server_fastapi.py, server_editor.py)
 ## Usage: uv sync --group server
@@ -137,8 +135,8 @@ train = [
     "pyloudnorm",
     "speechbrain>=1.0.3",
     "tensorboard",
-    "torchaudio>=2.9.1,<2.10.0",
-    "torchcodec>=0.9.1,<0.10.0",
+    "torchaudio==2.9.1",
+    "torchcodec==0.9.0",
     "utmosv2",
 ]
 ## ここまでの依存関係を全てインストールするグループ
@@ -206,18 +204,18 @@ speechbrain = { git = "https://github.com/speechbrain/speechbrain.git", rev = "2
 # Windows x64・Linux x64: CUDA 12.8 版
 # macOS・その他: PyPI から CPU 版
 torch = [
-    { index = "pytorch-cu128", marker = "(sys_platform == 'linux' and platform_machine == 'x86_64') or sys_platform == 'win32'" },
+    { index = "pytorch-cu130", marker = "(sys_platform == 'linux' and platform_machine == 'x86_64') or sys_platform == 'win32'" },
 ]
 torchaudio = [
-    { index = "pytorch-cu128", marker = "(sys_platform == 'linux' and platform_machine == 'x86_64') or sys_platform == 'win32'" },
+    { index = "pytorch-cu130", marker = "(sys_platform == 'linux' and platform_machine == 'x86_64') or sys_platform == 'win32'" },
 ]
 # UTMOSv2 は PyPI に公開されていないため GitHub から取得する
 utmosv2 = { git = "https://github.com/sarulab-speech/UTMOSv2.git", rev = "b4528c0418acca38c1c5c92a40c3e4a1e216fbbe" }
 
 # PyTorch の CUDA 12.8 版のパッケージインデックス
 [[tool.uv.index]]
-name = "pytorch-cu128"
-url = "https://download.pytorch.org/whl/cu128"
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
 explicit = true
 
 [tool.coverage.run]
@@ -280,7 +278,7 @@ indent-style = "space"
 
 [tool.pyright]
 # 型チェック対象の Python バージョンを指定
-pythonVersion = "3.11"
+pythonVersion = "3.13"
 # TypeCheckingMode を strict に設定（VSCode の設定と同等）
 typeCheckingMode = "strict"
 # プロジェクトルートを指定

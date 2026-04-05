@@ -7,7 +7,7 @@ from torch.nn import Conv1d, Conv2d, ConvTranspose1d
 from torch.nn import functional as F
 from torch.nn.utils import remove_weight_norm, spectral_norm, weight_norm
 
-from style_bert_vits2.models import attentions, commons, modules, monotonic_alignment
+from style_bert_vits2.models import commons, modules, monotonic_alignment, attentions_fast as attentions
 from style_bert_vits2.nlp.symbols import NUM_LANGUAGES, NUM_TONES, SYMBOLS
 
 
@@ -1202,7 +1202,7 @@ class SynthesizerTrn(nn.Module):
             if self.use_noise_scaled_mas:
                 epsilon = (
                     torch.std(neg_cent)
-                    * torch.randn_like(neg_cent)
+                    * torch.Frandn_like(neg_cent)
                     * self.current_mas_noise_scale
                 )
                 neg_cent = neg_cent + epsilon
