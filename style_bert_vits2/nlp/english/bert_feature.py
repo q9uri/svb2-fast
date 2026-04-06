@@ -46,18 +46,37 @@ def extract_bert_feature(
 
     style_res_mean = None
     with torch.no_grad():
-        tokenizer = bert_models.load_tokenizer(Languages.EN)
-        inputs = tokenizer(text, return_tensors="pt")
-        for i in inputs:
-            inputs[i] = inputs[i].to(device)  # type: ignore
-        res = model(**inputs, output_hidden_states=True)
-        res = torch.cat(res["hidden_states"][-3:-2], -1)[0]
+        res = model.encode(text, convert_to_tensor=True, device=str(device))
+
+        # 2. 形状の調整
+        if res.ndim == 1:
+            res = res.unsqueeze(0)
+
+        total_padding = len(word2ph) - len(res)
+
+        padding = torch.zeros((total_padding, res.shape[1]), dtype=res.dtype, device=res.device)
+        res = torch.cat([res, padding], 0).to(res.device)
+
+        linear_transform = torch.nn.Linear(in_features=512, out_features=1024).to(res.device)
+
+        # 変換を実行
+        res = linear_transform(res).to(res.device)
         if assist_text:
-            style_inputs = tokenizer(assist_text, return_tensors="pt")
-            for i in style_inputs:
-                style_inputs[i] = style_inputs[i].to(device)  # type: ignore
-            style_res = model(**style_inputs, output_hidden_states=True)
-            style_res = torch.cat(style_res["hidden_states"][-3:-2], -1)[0]
+            style_res = model.encode(assist_text, convert_to_tensor=True, device=str(device))
+
+            # 2. 形状の調整
+            if style_res.ndim == 1:
+                style_res = style_res.unsqueeze(0)
+
+            total_padding = len(word2ph) - len(style_res)
+
+            padding = torch.zeros((total_padding, style_res.shape[1]), dtype=style_res.dtype, device=style_res.device)
+            style_res = torch.cat([style_res, padding], 0).to(style_res.device)
+
+            linear_transform = torch.nn.Linear(in_features=512, out_features=1024).to(style_res.device)
+
+            # 変換を実行
+            style_res = linear_transform(style_res).to(style_res.device)
             style_res_mean = style_res.mean(0)
 
     assert len(word2ph) == res.shape[0], (text, res.shape[0], len(word2ph))
@@ -124,6 +143,27 @@ def extract_bert_feature_onnx(
     io_binding.bind_output(output_name, device_type)
     session.run_with_iobinding(io_binding, run_options=run_options)
     res = io_binding.get_outputs()[0].numpy()
+    res = np.mean(res, axis=0, keepdims=True)  # 1行に圧縮
+
+    # --- Linear Transformation ---
+    # You'll need the weight and bias from your PyTorch linear_transform.
+    # For this example, let's create dummy weight and bias
+    in_features = 512
+    out_features = 1024
+    linear_transform_weight = np.random.rand(out_features, in_features)  # PyTorch weight is [out, in]
+    linear_transform_bias = np.random.rand(out_features)  # PyTorch bias is [out]
+
+    # Perform the linear transformation: Y = X @ W_T + B
+    # In NumPy, for Y = XA^T + B, it's X @ A.T + B or X @ A_transposed + B
+    # Since PyTorch's linear layer weight is (out_features, in_features),
+    # we need to transpose it for the dot product with res (which is [N, in_features]).
+    res = res @ linear_transform_weight.T + linear_transform_bias
+
+    res = res.astype(np.float32)
+
+    total_padding = len(word2ph) - len(res)
+    padding = np.zeros((total_padding, res.shape[1]), dtype=res.dtype)
+    res = np.concatenate([res, padding], axis=0)
 
     style_res_mean = None
     if assist_text:

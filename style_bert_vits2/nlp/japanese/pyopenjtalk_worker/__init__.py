@@ -35,7 +35,7 @@ def run_frontend(
         # without worker
         import pyopenjtalk
 
-        return pyopenjtalk.run_frontend(text, run_marine, use_vanilla, jtalk)
+        return pyopenjtalk.run_frontend(text, run_marine=run_marine, use_vanilla=use_vanilla, jtalk=jtalk)
 
 
 def make_label(

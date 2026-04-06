@@ -59,7 +59,7 @@ from style_bert_vits2.constants import (
 from style_bert_vits2.logging import logger
 from style_bert_vits2.models import commons, utils
 from style_bert_vits2.models.hyper_parameters import HyperParameters
-from style_bert_vits2.models.train.models_jp_extra import (
+from style_bert_vits2.models.convert.models_jp_extra import (
     DurationDiscriminator,
     MultiPeriodDiscriminator,
     SynthesizerTrn,

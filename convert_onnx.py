@@ -129,6 +129,7 @@ if __name__ == "__main__":
         # モデルの入出力先ファイルパスを取得
         onnx_temp_model_path = model_path.parent / f"{model_path.stem}_temp.onnx"
         onnx_optimized_model_path = model_path.parent / f"{model_path.stem}.onnx"
+        onnx_int8_model_path = model_path.parent / f"{model_path.stem}_int8.onnx"
         config_path = model_path.parent / "config.json"
         style_vec_path = model_path.parent / "style_vectors.npy"
         aivm_path = model_path.parent / f"{model_path.stem}.aivm"

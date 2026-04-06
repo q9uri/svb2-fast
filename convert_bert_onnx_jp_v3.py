@@ -5,7 +5,7 @@ from sentence_transformers import SentenceTransformer
 
 import onnx
 from onnxsim import simplify
-from onnxconverter_common import float16 as float16_converter
+from onnxruntime.quantization import quantize_dynamic, QuantType
 
 def export():
 
@@ -14,7 +14,7 @@ def export():
 
     # 1. モデルのロード
     model_id = "RikkaBotan/stable-static-embedding-fast-retrieval-mrl-ja"
-    st_model = SentenceTransformer(model_id)
+    st_model = SentenceTransformer(model_id, trust_remote_code=True)
     sse_module = st_model[0]
 
     class SSEForVITS2(nn.Module):
@@ -42,7 +42,7 @@ def export():
             # L2 Normalize
             return F.normalize(x, p=2, dim=1)
 
-    wrapper = SSEForVITS2(sse_module).to("cpu")
+    wrapper = SSEForVITS2(sse_module).to("cpu").half()
     wrapper.eval()
 
     # ダミーデータ (Batch=1, Seq=10)
@@ -68,7 +68,6 @@ def export():
 
     onnx_model = onnx.load(onnx_temp_model_path)
     simplified_onnx_model, check = simplify(onnx_model)
-
     onnx.save(simplified_onnx_model, onnx_fp16_model_path)
 
 if __name__ == '__main__':

@@ -37,7 +37,7 @@ class Languages(StrEnum):
 DEFAULT_BERT_MODEL_PATHS = {
 
     Languages.JP: BASE_DIR / "bert" / "sse-fast-ja",
-    Languages.EN: BASE_DIR / "bert" / "deberta-v3-large",
+    Languages.EN: BASE_DIR / "bert" / "sse-fast-en",
     Languages.ZH: BASE_DIR / "bert" / "chinese-roberta-wwm-ext-large",
 }
 
@@ -45,8 +45,7 @@ DEFAULT_BERT_MODEL_PATHS = {
 DEFAULT_ONNX_BERT_MODEL_PATHS = {
 
     Languages.JP: BASE_DIR / "bert" / "sse-fast-ja-onnx",
-
-    Languages.EN: BASE_DIR / "bert" / "deberta-v3-large-onnx",
+    Languages.EN: BASE_DIR / "bert" / "sse-fast-en-onnx",
     Languages.ZH: BASE_DIR / "bert" / "chinese-roberta-wwm-ext-large-onnx",
 }
 

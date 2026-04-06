@@ -76,7 +76,6 @@ def export():
             keep_io_types=True,  # 入出力は float32 のまま
             disable_shape_infer=True,
         )
-
     
     onnx.save(fp16_model, onnx_fp16_model_path)
 if __name__ == '__main__':
