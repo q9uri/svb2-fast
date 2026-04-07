@@ -11,9 +11,12 @@ def export():
 
     onnx_temp_model_path = "./bert/sse-fast-ja-onnx/model.onnx"
     onnx_fp16_model_path = "./bert/sse-fast-ja-onnx/model_fp16.onnx"
+    onnx_temp_model_path = "./bert/sse-fast-en-onnx/model.onnx"
+    onnx_fp16_model_path = "./bert/sse-fast-en-onnx/model_fp16.onnx"
 
     # 1. モデルのロード
     model_id = "RikkaBotan/stable-static-embedding-fast-retrieval-mrl-ja"
+    model_id = "RikkaBotan/stable-static-embedding-fast-retrieval-mrl-en"
     st_model = SentenceTransformer(model_id, trust_remote_code=True)
     sse_module = st_model[0]
 
