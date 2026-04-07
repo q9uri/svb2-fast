@@ -17,13 +17,10 @@ from typing import TYPE_CHECKING, Literal
 from transformers import (
     AutoModelForMaskedLM,
     AutoTokenizer,
-    DebertaV2Model,
-    DebertaV2TokenizerFast,
     PreTrainedModel,
     PreTrainedTokenizer,
     PreTrainedTokenizerFast
 )
-from sentence_transformers import SentenceTransformer
 
 from style_bert_vits2.constants import DEFAULT_BERT_MODEL_PATHS, Languages
 from style_bert_vits2.logging import logger
@@ -32,10 +29,11 @@ from style_bert_vits2.nlp import onnx_bert_models
 
 if TYPE_CHECKING:
     import torch
+    from sentence_transformers import SentenceTransformer
 
 
 # 各言語ごとのロード済みの BERT モデルを格納する辞書
-__loaded_models: dict[Languages, PreTrainedModel | DebertaV2Model | SentenceTransformer] = {}
+__loaded_models: dict[Languages, PreTrainedModel | SentenceTransformer] = {}
 
 # 各言語ごとのロード済みモデルの精度情報を格納する辞書
 __loaded_model_dtypes: dict[Languages, Literal["fp32", "fp16", "int8"]] = {}
@@ -43,7 +41,7 @@ __loaded_model_dtypes: dict[Languages, Literal["fp32", "fp16", "int8"]] = {}
 # 各言語ごとのロード済みの BERT トークナイザーを格納する辞書
 __loaded_tokenizers: dict[
     Languages,
-    PreTrainedTokenizer | PreTrainedTokenizerFast | DebertaV2TokenizerFast,
+    PreTrainedTokenizer | PreTrainedTokenizerFast,
 ] = {}
 
 
@@ -61,7 +59,7 @@ def load_model(
     use_int8: bool = False,
     llm_int8_threshold: float = 6.0,
     llm_int8_skip_modules: list[str] | None = None,
-) -> PreTrainedModel | DebertaV2Model | SentenceTransformer:
+) -> PreTrainedModel | SentenceTransformer:
     """
     指定された言語の BERT モデルをロードし、ロード済みの BERT モデルを返す。
     一度ロードされていれば、ロード済みの BERT モデルを即座に返す。
@@ -98,6 +96,7 @@ def load_model(
     """
 
     import torch
+    from sentence_transformers import SentenceTransformer
 
     # すでにロード済みの場合はそのまま返す
     if language in __loaded_models:
@@ -144,21 +143,10 @@ def load_model(
     # BERT モデルをロードし、辞書に格納して返す
     ## 日本語1または英語のみ DebertaV2Model でロードする必要がある
     start_time = time.time()
-    if language == Languages.JP:
+    if language in (Languages.JP, Languages.EN):
         __loaded_models[language] = SentenceTransformer(
             pretrained_model_name_or_path,
             revision=revision,
-        )
-
-    elif language == Languages.EN:
-        __loaded_models[language] = DebertaV2Model.from_pretrained(
-            pretrained_model_name_or_path,
-            device_map=device_map,
-            cache_dir=cache_dir,
-            revision=revision,
-            torch_dtype=torch_dtype,
-            quantization_config=quantization_config,
-            low_cpu_mem_usage=True,  # 常に True にしてメモリ効率を向上
         )
     else:
         __loaded_models[language] = AutoModelForMaskedLM.from_pretrained(
@@ -199,7 +187,7 @@ def load_tokenizer(
     pretrained_model_name_or_path: str | None = None,
     cache_dir: str | None = None,
     revision: str = "main",
-) -> PreTrainedTokenizer | PreTrainedTokenizerFast | DebertaV2TokenizerFast:
+) -> PreTrainedTokenizer | PreTrainedTokenizerFast :
     """
     指定された言語の BERT トークナイザーをロードし、ロード済みの BERT トークナイザーを返す。
     一度ロードされていれば、ロード済みの BERT トークナイザーを即座に返す。
@@ -238,21 +226,12 @@ def load_tokenizer(
             f"The default {language.name} BERT tokenizer does not exist on the file system. Please specify the path to the pre-trained model."  # fmt: skip
         pretrained_model_name_or_path = str(DEFAULT_BERT_MODEL_PATHS[language])
 
-    # BERT トークナイザーをロードし、辞書に格納して返す
-    ## 英語のみ DebertaV2TokenizerFast でロードする必要がある
-    if language == Languages.EN:
-        __loaded_tokenizers[language] = DebertaV2TokenizerFast.from_pretrained(
-            pretrained_model_name_or_path,
-            cache_dir=cache_dir,
-            revision=revision,
-        )
-    else:
-        __loaded_tokenizers[language] = AutoTokenizer.from_pretrained(
-            pretrained_model_name_or_path,
-            cache_dir=cache_dir,
-            revision=revision,
-            use_fast=True,  # デフォルトで True だが念のため明示的に指定
-        )
+    __loaded_tokenizers[language] = AutoTokenizer.from_pretrained(
+        pretrained_model_name_or_path,
+        cache_dir=cache_dir,
+        revision=revision,
+        use_fast=True,  # デフォルトで True だが念のため明示的に指定
+    )
     logger.info(
         f"Loaded the {language.name} BERT tokenizer from {pretrained_model_name_or_path}"
     )
