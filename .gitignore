@@ -8,24 +8,22 @@ dist/
 .DS_Store
 ._*
 
-/*.yml
-!/default_config.yml
-/bert/*/*.bin
-/bert/*/*.h5
-/bert/*/*.model
-/bert/*/*.safetensors
-/bert/*/*.msgpack
-/bert/*/*.onnx
-
 /configs/paths.yml
 
-/pretrained/*.safetensors
-/pretrained/*.pth
+/*.yml
+!/default_config.yml
 
-/pretrained_jp_extra/*.safetensors
-/pretrained_jp_extra/*.pth
-
-/slm/*/*.bin
+User/bert/*/*.bin
+User/bert/*/*.h5
+User/bert/*/*.model
+User/bert/*/*.safetensors
+User/bert/*/*.msgpack
+Users/bert/*/*.onnx
+User/pretrained/*.safetensors
+User/pretrained/*.pth
+User/pretrained_jp_extra/*.safetensors
+User/pretrained_jp_extra/*.pth
+User/slm/*/*.bin
 
 /scripts/test/
 /scripts/lib/

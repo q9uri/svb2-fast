@@ -245,7 +245,7 @@ class MultiHeadAttention(nn.Module):
         p_dropout: float = 0.0,
         window_size: int | None = None,
         heads_share: bool = True,
-        block_length: int | None = None,
+        block_length: int | None = 64,
         proximal_bias: bool = False,
         proximal_init: bool = False,
     ) -> None:
@@ -292,8 +292,6 @@ class MultiHeadAttention(nn.Module):
                 assert self.conv_q.bias is not None
                 self.conv_k.bias.copy_(self.conv_q.bias)
 
-        self.compiled_flex_attn = torch.compile(flex_attention)
-
     def forward(
         self,
         x: torch.Tensor,
@@ -301,51 +299,53 @@ class MultiHeadAttention(nn.Module):
         attn_mask: torch.Tensor | None = None,
         use_fp16: bool = False,
     ) -> torch.Tensor:
+
+
+        # Conv1d出力: (N, C, L)
         q = self.conv_q(x)
         k = self.conv_k(c)
         v = self.conv_v(c)
 
-        #注意重みなんて保持しない
-        self.attn = None
         is_causal = False
         q_len = q.shape[-2]
         kv_len = k.shape[-2]
-        use_sparse = q_len > 512 and kv_len > 512
+        use_sparse = False #q_len > 64 and kv_len > 64
 
         if use_sparse:
-            block_mask = create_block_mask(
-                local_global_mask,
-                B=None, H=None,
-                Q_LEN=q_len, KV_LEN=kv_len,  # 最大長
-                device="auto"
-            )
-            # block_maskを渡すと、計算の必要がないブロックを自動的にスキップします
-            x = self.compiled_flex_attn(
-                query=q,
-                key=k,
-                value=v,
-                block_mask=block_mask,
-                enable_gqa=True,
-            )
+            # 学習時のみ self.attn に注意重みを保持し、推論時はメモリ節約のため保持しない
+            x, attn = self.attention(q, k, v, mask=attn_mask, use_fp16=use_fp16)
+            if torch.is_grad_enabled():
+                self.attn = attn
+            else:
+                self.attn = None
+            x = self.conv_o(x)
+
         else:
+            # 変形: (N, C, L) -> (N, H, E, L) -> (N, H, L, E)
+
+            #1. viewでヘッド分割: (N, H, E, L)
+            q = q.view(q.shape[0], self.n_heads, self.k_channels, -1)
+            # 2. transposeでLとEを入れ替え: (N, H, L, E)
+            q = q.transpose(-2, -1)
+            #以下同上
+
+            k = k.view(k.shape[0], self.n_heads, self.k_channels, -1)
+            k = k.transpose(-2, -1)
+            v = v.view(v.shape[0], self.n_heads, self.k_channels, -1)
+            v = v.transpose(-2, -1)
+
             x = torch.nn.functional.scaled_dot_product_attention(
                 q,
                 k,
                 v,
                 is_causal=is_causal,
                 enable_gqa=True,
+                attn_mask=attn_mask,
+                dropout_p=self.p_dropout
             )
-
-        """
-        # 学習時のみ self.attn に注意重みを保持し、推論時はメモリ節約のため保持しない
-        x, attn = self.attention(q, k, v, mask=attn_mask, use_fp16=use_fp16)
-        if torch.is_grad_enabled():
-            self.attn = attn
-        else:
             self.attn = None
-        """
 
-        x = self.conv_o(x)
+
         return x
 
     def attention(

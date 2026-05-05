@@ -866,6 +866,7 @@ def infer(
                     external_spk_emb=external_speaker_embedding,
                     g_adjust=g_adjust,
                 )
+                audio = output[0][0, 0].data.cpu().float().numpy()
             else:
                 output = cast(SynthesizerTrnJPExtra, net_g).infer(
                     x_tst,
@@ -883,6 +884,7 @@ def infer(
                     durations_frames_override=durations_frames_override,
                     durations_frames_override_mask=durations_frames_override_mask,
                 )
+                audio = output[0].detach().cpu().squeeze().numpy()
         else:
             output = cast(SynthesizerTrn, net_g).infer(
                 x_tst,
@@ -903,7 +905,7 @@ def infer(
                 durations_frames_override_mask=durations_frames_override_mask,
             )
 
-        audio = output[0][0, 0].data.cpu().float().numpy()
+            audio = output[0][0, 0].data.cpu().float().numpy()
 
         del (
             x_tst,

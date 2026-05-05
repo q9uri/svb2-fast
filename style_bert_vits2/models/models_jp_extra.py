@@ -7,8 +7,8 @@ from torch.nn import Conv1d, Conv2d, ConvTranspose1d
 from torch.nn import functional as F
 from torch.nn.utils import remove_weight_norm, spectral_norm, weight_norm
 
-from style_bert_vits2.models import attentions_fast as attentions
-from style_bert_vits2.models import modules
+from style_bert_vits2.models.convert import attentions
+from style_bert_vits2.models.convert import modules
 from style_bert_vits2.models import monotonic_alignment, commons
 from style_bert_vits2.nlp.symbols import NUM_LANGUAGES, NUM_TONES, SYMBOLS
 
@@ -686,6 +686,7 @@ class Generator(torch.nn.Module):
             remove_weight_norm(layer)
         for layer in self.resblocks:
             layer.remove_weight_norm()  # type: ignore
+
 
 
 class DiscriminatorP(torch.nn.Module):
@@ -1370,7 +1371,6 @@ class SynthesizerTrn(nn.Module):
                 # Generator への入力を FP16 に変換
                 o = self.dec(z_input.half(), g=g.half())
         else:
-            # FP16 を使わない場合は通常通り実行
             o = self.dec((z * y_mask)[:, :, :max_len], g=g)
 
         return (o, attn, y_mask, (z, z_p, m_p, logs_p))

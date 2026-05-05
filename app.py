@@ -37,8 +37,6 @@ device = args.device
 if device == "cuda" and not torch.cuda.is_available():
     device = "cpu"
 
-device = "cpu"
-
 # if not args.skip_default_models:
 #     download_default_models()
 

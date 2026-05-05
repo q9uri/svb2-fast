@@ -437,13 +437,10 @@ class TTSModel:
         """
 
         logger.info(f"Start predicting token durations from text:\n{text}")
-        if language not in ("JP" "JP2") and self.hyper_parameters.is_jp_extra_like_model():
+        if language not in ("JP") and self.hyper_parameters.is_jp_extra_like_model():
             raise ValueError(
                 "The model is trained with JP-Extra or Nanairo, but the language is not JP"
-            )
-        else:
-            if self.hyper_parameters.is_jp2_extra_like_model():
-                language = Languages.JP2
+        )
 
         if reference_audio_path == "":
             reference_audio_path = None

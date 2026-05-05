@@ -36,23 +36,23 @@ class Languages(StrEnum):
 # 言語ごとのデフォルトの BERT モデルのパス
 DEFAULT_BERT_MODEL_PATHS = {
 
-    Languages.JP: BASE_DIR / "bert" / "sse-fast-ja",
-    Languages.EN: BASE_DIR / "bert" / "sse-fast-en",
-    Languages.ZH: BASE_DIR / "bert" / "chinese-roberta-wwm-ext-large",
+    Languages.JP: BASE_DIR / "User" / "bert" / "sse-fast-ja",
+    Languages.EN: BASE_DIR / "User" / "bert" / "sse-fast-en",
+    Languages.ZH: BASE_DIR / "User" / "bert" / "chinese-roberta-wwm-ext-large",
 }
 
 # 言語ごとのデフォルトの BERT モデル (ONNX 版) のパス
 DEFAULT_ONNX_BERT_MODEL_PATHS = {
 
-    Languages.JP: BASE_DIR / "bert" / "sse-fast-ja-onnx",
-    Languages.EN: BASE_DIR / "bert" / "sse-fast-en-onnx",
-    Languages.ZH: BASE_DIR / "bert" / "chinese-roberta-wwm-ext-large-onnx",
+    Languages.JP: BASE_DIR / "User" / "bert" / "sse-fast-ja-onnx",
+    Languages.EN: BASE_DIR / "User" / "bert" / "sse-fast-en-onnx",
+    Languages.ZH: BASE_DIR / "User" / "bert" / "chinese-roberta-wwm-ext-large-onnx",
 }
 
 # デフォルトのユーザー辞書ディレクトリ
 ## style_bert_vits2.nlp.japanese.user_dict モジュールのデフォルト値として利用される
 ## ライブラリとしての利用などで外部のユーザー辞書を指定したい場合は、user_dict 以下の各関数の実行時、引数に辞書データファイルのパスを指定する
-DEFAULT_USER_DICT_DIR = BASE_DIR / "dict_data"
+DEFAULT_USER_DICT_DIR = BASE_DIR / "User" / "dict_data"
 
 # デフォルトの推論パラメータ
 DEFAULT_STYLE = "Neutral"
