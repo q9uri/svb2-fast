@@ -18,10 +18,11 @@ User/bert/*/*.h5
 User/bert/*/*.model
 User/bert/*/*.safetensors
 User/bert/*/*.msgpack
-Users/bert/*/*.onnx
+User/bert/*/*.onnx
 User/pretrained/*.safetensors
 User/pretrained/*.pth
 User/pretrained_jp_extra/*.safetensors
+User/pretrained_jp_extra/bak/*.safetensors
 User/pretrained_jp_extra/*.pth
 User/slm/*/*.bin
 
