@@ -170,8 +170,6 @@ def create_dataset_app() -> gr.Blocks:
                 )
                 whisper_model = gr.Dropdown(
                     [
-                        "large",
-                        "large-v2",
                         "large-v3",
                     ],
                     label="Whisperモデル",
@@ -182,7 +180,6 @@ def create_dataset_app() -> gr.Blocks:
                     [
                         "openai/whisper-large-v3-turbo",
                         "openai/whisper-large-v3",
-                        "openai/whisper-large-v2",
                         "kotoba-tech/kotoba-whisper-v2.1",
                         "litagin/anime-whisper",
                     ],
