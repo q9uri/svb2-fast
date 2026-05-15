@@ -107,7 +107,7 @@ def initialize(
             dirs_exist_ok=True,
         )
         shutil.rmtree(model_path)
-    pretrained_dir = Path("pretrained" if not use_jp_extra else "pretrained_jp_extra")
+    pretrained_dir = Path("User/pretrained" if not use_jp_extra else "User/pretrained_jp_extra")
     try:
         shutil.copytree(
             src=pretrained_dir,
@@ -126,7 +126,7 @@ def initialize(
 def resample(model_name: str, normalize: bool, trim: bool, num_processes: int):
     logger.info("Step 2: start resampling...")
     cmd = [
-        "resample.py",
+        "scripts/train/resample.py",
         "--model",
         model_name,
         "--num_processes",
@@ -158,7 +158,7 @@ def preprocess_text(model_name: str, val_per_lang: int, yomi_error: str):
         )
 
     cmd = [
-        "preprocess_text.py",
+        "scripts/train/preprocess_text.py",
         "--model",
         model_name,
         "--val-per-lang",
@@ -185,7 +185,7 @@ def preprocess_text(model_name: str, val_per_lang: int, yomi_error: str):
 
 def bert_gen(model_name: str):
     logger.info("Step 4: start bert_gen...")
-    success, message = run_script_with_log(["bert_gen.py", "--model", model_name])
+    success, message = run_script_with_log(["scripts/train/abert_gen.py", "--model", model_name])
     if not success:
         logger.error("Step 4: bert_gen failed.")
         return False, f"Step 4, Error: BERT特徴ファイルの生成に失敗しました:\n{message}"
@@ -203,7 +203,7 @@ def style_gen(model_name: str, num_processes: int):
     logger.info("Step 5: start style_gen...")
     success, message = run_script_with_log(
         [
-            "style_gen.py",
+            "scripts/train/style_gen.py",
             "--model",
             model_name,
             "--num_processes",
@@ -300,7 +300,7 @@ def train(
     not_use_custom_batch_sampler: bool = False,
 ):
     # use_jp_extra は config.json に保存されているが、UI での選択に基づいてスクリプトを選ぶ
-    train_py = "train_ms.py" if not use_jp_extra else "train_ms_jp_extra.py"
+    train_py = "scripts/train/train_ms.py" if not use_jp_extra else "scripts/train/train_ms_jp_extra.py"
     cmd = [
         train_py,
         "--model",

@@ -17,7 +17,7 @@ def do_slice(
         return "Error: モデル名を入力してください。"
     logger.info("Start slicing...")
     cmd = [
-        "slice.py",
+        "scripts/train/slice.py",
         "--model",
         model_name,
         "--min_sec",
@@ -58,7 +58,7 @@ def do_transcribe(
         initial_prompt = ""
 
     cmd = [
-        "transcribe.py",
+        "scripts/train/transcribe.py",
         "--model",
         model_name,
         "--whisper-model",
