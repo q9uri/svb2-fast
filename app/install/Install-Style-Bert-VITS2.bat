@@ -78,7 +78,7 @@ echo Executing: git clone %REPO_URL%
 git clone %REPO_URL%
 if !errorlevel! neq 0 ( pause & popd & exit /b !errorlevel! )
 
-@REM Pythonのセットアップ、仮想環境が有効化されて戻って来る
+@REM Pythonのセットアップ
 echo --------------------------------------------------
 echo Setting up Python environment...
 echo --------------------------------------------------
@@ -108,17 +108,24 @@ pip install uv
 if !errorlevel! neq 0 ( pause & popd & exit /b !errorlevel! )
 
 echo --------------------------------------------------
-echo Installing dependencies...
+echo Installing PyTorch...
 echo --------------------------------------------------
-echo Executing: uv pip install -r requirements-infer.txt
-uv pip install -r requirements-infer.txt
+echo Executing: uv pip install "torch<2.4" "torchaudio<2.4" --index-url https://download.pytorch.org/whl/cu118
+uv pip install "torch<2.4" "torchaudio<2.4" --index-url https://download.pytorch.org/whl/cu118
+if !errorlevel! neq 0 ( pause & popd & exit /b !errorlevel! )
+
+echo --------------------------------------------------
+echo Installing other dependencies...
+echo --------------------------------------------------
+echo Executing: uv pip install -r requirements.txt
+uv pip install -r requirements.txt
 if !errorlevel! neq 0 ( pause & popd & exit /b !errorlevel! )
 
 echo ----------------------------------------
 echo Environment setup is complete. Start downloading the model.
 echo ----------------------------------------
 echo Executing: python initialize.py
-python initialize.py --only_infer
+python scripts\initialize.py
 
 echo ----------------------------------------
 echo Model download is complete. Start Style-Bert-VITS2 Editor.
