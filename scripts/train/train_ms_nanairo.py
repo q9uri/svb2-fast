@@ -74,26 +74,26 @@ from style_bert_vits2.utils.paths import (
 from style_bert_vits2.utils.stdout_wrapper import SAFE_STDOUT
 
 # logging.getLogger("numba").setLevel(logging.WARNING)
-from training import default_style
-from training.data_utils import (
+from scripts.training import default_style
+from scripts.training.data_utils import (
     DistributedBucketSampler,
     TextAudioSpeakerCollate,
     TextAudioSpeakerLoader,
 )
-from training.losses import (
+from scripts.training.losses import (
     WavLMLoss,
     discriminator_loss,
     feature_loss,
     generator_loss,
     kl_loss,
 )
-from training.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
-from training.runtime import (
+from scripts.training.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
+from scripts.training.runtime import (
     EMAModel,
     GradientMonitor,
     TrainRuntimeConfig,
 )
-from training.utils import check_git_hash, get_steps, is_resuming, summarize
+from scripts.training.utils import check_git_hash, get_steps, is_resuming, summarize
 
 
 if TYPE_CHECKING:

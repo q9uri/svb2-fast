@@ -39,16 +39,16 @@ from style_bert_vits2.utils.paths import (
 from style_bert_vits2.utils.stdout_wrapper import SAFE_STDOUT
 
 # logging.getLogger("numba").setLevel(logging.WARNING)
-from training import default_style
-from training.data_utils import (
+from scripts.train.training import default_style
+from scripts.train.training.data_utils import (
     DistributedBucketSampler,
     TextAudioSpeakerCollate,
     TextAudioSpeakerLoader,
 )
-from training.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
-from training.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
-from training.runtime import TrainRuntimeConfig
-from training.utils import check_git_hash, get_steps, is_resuming, summarize
+from scripts.train.training.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
+from scripts.train.training.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
+from scripts.train.training.runtime import TrainRuntimeConfig
+from scripts.train.training.utils import check_git_hash, get_steps, is_resuming, summarize
 
 
 if TYPE_CHECKING:

@@ -26,7 +26,7 @@ from style_bert_vits2.utils.style_strength import (
     apply_style_strength,
     load_style_strength,
 )
-from training.default_style import save_styles_by_dirs
+from scripts.train.training.default_style import save_styles_by_dirs
 
 
 paths_config = get_paths_config()
