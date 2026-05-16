@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).parent.parent
 
 # デフォルトの学習用データセットのルートディレクトリ
 ## {model_folder_name} の学習データは {DATASET_ROOT}/{model_folder_name}/ に配置する
-DEFAULT_DATASET_ROOT = BASE_DIR / "Data"
+DEFAULT_DATASET_ROOT = BASE_DIR / "Datasets/Data"
 
 # デフォルトの推論用モデルアセットのルートディレクトリ
 ## 学習時は {ASSETS_ROOT}/{model_folder_name}/ にモデルが保存され、

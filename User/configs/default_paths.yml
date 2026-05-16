@@ -1,6 +1,6 @@
 # Root directory of the training dataset.
 # The training dataset of {model_name} should be placed in {dataset_root}/{model_name}.
-dataset_root: User/Data
+dataset_root: Datasets/Data
 
 # Root directory of the model assets (for inference).
 # In training, the model assets will be saved to {assets_root}/{model_name},
