@@ -67,16 +67,31 @@ def load_model(
     ロードにはそれなりに時間がかかるため、ライブラリ利用前に明示的に pretrained_model_name_or_path を指定してロードしておくべき。
     device_map は既に指定された言語の BERT モデルがロードされている場合は効果がない。
     cache_dir と revision は pretrain_model_name_or_path がリポジトリ名の場合のみ有効。
-    use_fp16 を True にすると torch_dtype=torch.float16 でロードされ、メモリ使用量を大幅に削減し推論を高速化できる。
-    最新の GPU では FP16 による精度低下はほとんどないため、実用的な選択肢である。
-    use_int8 を True にすると bitsandbytes による INT8 量子化でロードされ、さらなるメモリ削減が可能。
-    ただし、8bit 量子化は GPU 必須で、わずかな精度低下が発生する可能性がある。
 
-    Style-Bert-VITS2 では、BERT モデルに下記の 3 つが利用されている。
-    これ以外の BERT モデルを指定した場合は正常に動作しない可能性が高い。
+    Style-Bert-VITS2 では、BERT モデルに下記の 3 つが利用されていた。
     - 日本語: ku-nlp/deberta-v2-large-japanese-char-wwm
     - 英語: microsoft/deberta-v3-large
     - 中国語: hfl/chinese-roberta-wwm-ext-large
+
+    svb2-fast (検索を避けるためsvb2としている)では、stable-static-embeddingを使用しているため
+    style sse-fast vits2もしくはstyle sentence embed vits2とでも呼称すべきなのだろうが。。
+    現時点で日本語bertを以下のモデルに変更している
+    - 日本語onnx: RikkaBotan/stable-static-embedding-fast-retrieval-mrl-ja
+    - 日本語torch: RikkaBotan/quantized-stable-static-embedding-fast-retrieval-mrl-ja
+
+
+    todo:
+        英語のstable-static-embeddingへの対応
+            - 日本語onnx: RikkaBotan/stable-static-embedding-fast-retrieval-mrl-en
+            - 英語torch: RikkaBotan/quantized-stable-static-embedding-fast-retrieval-mrl-en
+        不要機能の削除
+
+    duplicated:
+        use_fp16 を True にすると torch_dtype=torch.float16 でロードされ、メモリ使用量を大幅に削減し推論を高速化できる。
+        最新の GPU では FP16 による精度低下はほとんどないため、実用的な選択肢である。
+        use_int8 を True にすると bitsandbytes による INT8 量子化でロードされ、さらなるメモリ削減が可能。
+        ただし、8bit 量子化は GPU 必須で、わずかな精度低下が発生する可能性がある。
+
 
     Args:
         language (Languages): ロードする学習済みモデルの対象言語

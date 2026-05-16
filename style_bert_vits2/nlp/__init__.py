@@ -50,7 +50,7 @@ def extract_bert_feature(
 
     if language == Languages.JP:
 
-        from style_bert_vits2.nlp.japanese.bert_feature3 import extract_bert_feature
+        from style_bert_vits2.nlp.japanese.bert_feature import extract_bert_feature
 
         return extract_bert_feature(
             text,

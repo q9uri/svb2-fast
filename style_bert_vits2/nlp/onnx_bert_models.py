@@ -53,9 +53,10 @@ def load_model(
     ロードにはそれなりに時間がかかるため、ライブラリ利用前に明示的に pretrained_model_name_or_path を指定してロードしておくべき。
     cache_dir と revision は pretrain_model_name_or_path がリポジトリ名の場合のみ有効。
 
-    Style-Bert-VITS2 では、ONNX 版 BERT モデルに下記の 3 つが利用されている。
-    これ以外の ONNX 版 BERT モデルを指定した場合は正常に動作しない可能性が高い。
-    - 日本語: tsukumijima/deberta-v2-large-japanese-char-wwm-onnx
+    duplicated:
+        Style-Bert-VITS2 では、ONNX 版 BERT モデルに下記の 3 つが利用されている。
+        これ以外の ONNX 版 BERT モデルを指定した場合は正常に動作しない可能性が高い。
+        - 日本語: tsukumijima/deberta-v2-large-japanese-char-wwm-onnx
 
     Args:
         language (Languages): ロードする学習済みモデルの対象言語
