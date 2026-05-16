@@ -16,12 +16,12 @@ DEFAULT_DATASET_ROOT = BASE_DIR / "Data"
 # デフォルトの推論用モデルアセットのルートディレクトリ
 ## 学習時は {ASSETS_ROOT}/{model_folder_name}/ にモデルが保存され、
 ## 推論時は {ASSETS_ROOT} 以下の全モデルを読み込む
-DEFAULT_ASSETS_ROOT = BASE_DIR / "model_assets"
+DEFAULT_ASSETS_ROOT = BASE_DIR / "User/model_assets"
 
 # デフォルトのパス設定ファイルのパス
-DEFAULT_PATHS_CONFIG_PATH = BASE_DIR / "configs/paths.yml"
+DEFAULT_PATHS_CONFIG_PATH = BASE_DIR / "User/configs/paths.yml"
 # デフォルトのパス設定ファイルのテンプレートのパス
-DEFAULT_PATHS_TEMPLATE_PATH = BASE_DIR / "configs/default_paths.yml"
+DEFAULT_PATHS_TEMPLATE_PATH = BASE_DIR / "User/configs/default_paths.yml"
 
 
 # 利用可能な言語
