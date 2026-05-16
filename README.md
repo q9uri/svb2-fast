@@ -14,6 +14,52 @@ so many thanks to the original author!
 
 see [library.ipynb](/library.ipynb) for example usage.
 
+--- 
+## References
+
+### Style-Bert-VITS2
+In addition to the original reference (written below), I used the following repositories:
+- [Bert-VITS2](https://github.com/fishaudio/Bert-VITS2)
+- [EasyBertVits2](https://github.com/Zuntan03/EasyBertVits2)
+
+[The pretrained model](https://huggingface.co/litagin/Style-Bert-VITS2-1.0-base) and [JP-Extra version](https://huggingface.co/litagin/Style-Bert-VITS2-2.0-base-JP-Extra) is essentially taken from [the original base model of Bert-VITS2 v2.1](https://huggingface.co/Garydesu/bert-vits2_base_model-2.1) and [JP-Extra pretrained model of Bert-VITS2](https://huggingface.co/Stardust-minus/Bert-VITS2-Japanese-Extra), so all the credits go to the original author ([Fish Audio](https://github.com/fishaudio)):
+
+
+In addition, [text/user_dict/](text/user_dict) module is based on the following repositories:
+- [voicevox_engine](https://github.com/VOICEVOX/voicevox_engine)
+and the license of this module is LGPL v3.
+
+#### Bert-VITS2との関係
+> 基本的にはBert-VITS2のモデル構造を少し改造しただけです。[旧事前学習モデル](https://huggingface.co/litagin/Style-Bert-VITS2-1.0-base)も[JP-Extraの事前学習モデル](https://huggingface.co/litagin/Style-Bert-VITS2-2.0-base-JP-Extra)も、実質Bert-VITS2 v2.1 or JP-Extraと同じものを使用しています（不要な重みを削ってsafetensorsに変換したもの）。
+
+> 具体的には以下の点が異なります。
+
+- [EasyBertVits2](https://github.com/Zuntan03/EasyBertVits2)のように、PythonやGitを知らない人でも簡単に使える。
+- 感情埋め込みのモデルを変更（256次元の[wespeaker-voxceleb-resnet34-LM](https://huggingface.co/pyannote/wespeaker-voxceleb-resnet34-LM)へ、感情埋め込みというよりは話者識別のための埋め込み）
+- 感情埋め込みもベクトル量子化を取り払い、単なる全結合層に。
+- スタイルベクトルファイル`style_vectors.npy`を作ることで、そのスタイルを使って効果の強さも連続的に指定しつつ音声を生成することができる。
+- 各種WebUIを作成
+- bf16での学習のサポート
+- safetensors形式のサポート、デフォルトでsafetensorsを使用するように
+- その他軽微なbugfixやリファクタリング
+
+### Bert-VITS2
++ [anyvoiceai/MassTTS](https://github.com/anyvoiceai/MassTTS)
++ [jaywalnut310/vits](https://github.com/jaywalnut310/vits)
++ [p0p4k/vits2_pytorch](https://github.com/p0p4k/vits2_pytorch)
++ [svc-develop-team/so-vits-svc](https://github.com/svc-develop-team/so-vits-svc)
++ [PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)
++ [emotional-vits](https://github.com/innnky/emotional-vits)
++ [fish-speech](https://github.com/fishaudio/fish-speech)
++ [Bert-VITS2-UI](https://github.com/jiangyuxiaoxiao/Bert-VITS2-UI)
+
+--- 
+
+## LICENSE
+
+This repository is licensed under the GNU Affero General Public License v3.0, the same as the original Bert-VITS2 repository. For more details, see [LICENSE](LICENSE).
+
+In addition, [text/user_dict/](text/user_dict) module is licensed under the GNU Lesser General Public License v3.0, inherited from the original VOICEVOX engine repository. For more details, see [LGPL_LICENSE](LGPL_LICENSE).
 
 ---
 ## STyle-Bert-VITS2
@@ -138,53 +184,6 @@ python scripts/speech_mos.py -m <model_name>
 - [Zennの解説記事](https://zenn.dev/litagin/articles/034818a5256ff4)
 
 
-
---- 
-## References
-
-### Style-Bert-VITS2
-In addition to the original reference (written below), I used the following repositories:
-- [Bert-VITS2](https://github.com/fishaudio/Bert-VITS2)
-- [EasyBertVits2](https://github.com/Zuntan03/EasyBertVits2)
-
-[The pretrained model](https://huggingface.co/litagin/Style-Bert-VITS2-1.0-base) and [JP-Extra version](https://huggingface.co/litagin/Style-Bert-VITS2-2.0-base-JP-Extra) is essentially taken from [the original base model of Bert-VITS2 v2.1](https://huggingface.co/Garydesu/bert-vits2_base_model-2.1) and [JP-Extra pretrained model of Bert-VITS2](https://huggingface.co/Stardust-minus/Bert-VITS2-Japanese-Extra), so all the credits go to the original author ([Fish Audio](https://github.com/fishaudio)):
-
-
-In addition, [text/user_dict/](text/user_dict) module is based on the following repositories:
-- [voicevox_engine](https://github.com/VOICEVOX/voicevox_engine)
-and the license of this module is LGPL v3.
-
-#### Bert-VITS2との関係
-> 基本的にはBert-VITS2のモデル構造を少し改造しただけです。[旧事前学習モデル](https://huggingface.co/litagin/Style-Bert-VITS2-1.0-base)も[JP-Extraの事前学習モデル](https://huggingface.co/litagin/Style-Bert-VITS2-2.0-base-JP-Extra)も、実質Bert-VITS2 v2.1 or JP-Extraと同じものを使用しています（不要な重みを削ってsafetensorsに変換したもの）。
-
-> 具体的には以下の点が異なります。
-
-- [EasyBertVits2](https://github.com/Zuntan03/EasyBertVits2)のように、PythonやGitを知らない人でも簡単に使える。
-- 感情埋め込みのモデルを変更（256次元の[wespeaker-voxceleb-resnet34-LM](https://huggingface.co/pyannote/wespeaker-voxceleb-resnet34-LM)へ、感情埋め込みというよりは話者識別のための埋め込み）
-- 感情埋め込みもベクトル量子化を取り払い、単なる全結合層に。
-- スタイルベクトルファイル`style_vectors.npy`を作ることで、そのスタイルを使って効果の強さも連続的に指定しつつ音声を生成することができる。
-- 各種WebUIを作成
-- bf16での学習のサポート
-- safetensors形式のサポート、デフォルトでsafetensorsを使用するように
-- その他軽微なbugfixやリファクタリング
-
-### Bert-VITS2
-+ [anyvoiceai/MassTTS](https://github.com/anyvoiceai/MassTTS)
-+ [jaywalnut310/vits](https://github.com/jaywalnut310/vits)
-+ [p0p4k/vits2_pytorch](https://github.com/p0p4k/vits2_pytorch)
-+ [svc-develop-team/so-vits-svc](https://github.com/svc-develop-team/so-vits-svc)
-+ [PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)
-+ [emotional-vits](https://github.com/innnky/emotional-vits)
-+ [fish-speech](https://github.com/fishaudio/fish-speech)
-+ [Bert-VITS2-UI](https://github.com/jiangyuxiaoxiao/Bert-VITS2-UI)
-
---- 
-
-## LICENSE
-
-This repository is licensed under the GNU Affero General Public License v3.0, the same as the original Bert-VITS2 repository. For more details, see [LICENSE](LICENSE).
-
-In addition, [text/user_dict/](text/user_dict) module is licensed under the GNU Lesser General Public License v3.0, inherited from the original VOICEVOX engine repository. For more details, see [LGPL_LICENSE](LGPL_LICENSE).
 
 
 --- 
