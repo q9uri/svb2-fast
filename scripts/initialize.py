@@ -126,8 +126,8 @@ def main():
         download_jp_extra_pretrained_models()
 
     # If configs/paths.yml not exists, create it
-    default_paths_yml = Path("configs/default_paths.yml")
-    paths_yml = Path("configs/paths.yml")
+    default_paths_yml = Path("User/configs/default_paths.yml")
+    paths_yml = Path("User/configs/paths.yml")
     if not paths_yml.exists():
         shutil.copy(default_paths_yml, paths_yml)
 

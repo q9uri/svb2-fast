@@ -58,7 +58,7 @@ from style_bert_vits2.utils.paths import get_paths_config
 # ---フロントエンド部分に関する処理---
 
 # エディターのビルドファイルを配置するディレクトリ
-STATIC_DIR = Path("static")
+STATIC_DIR = Path("webui/static")
 # エディターの最新のビルドファイルのダウンロード日時を記録するファイル
 LAST_DOWNLOAD_FILE = STATIC_DIR / "last_download.txt"
 

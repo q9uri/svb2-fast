@@ -3,12 +3,12 @@ import argparse
 import gradio as gr
 import torch
 
-from gradio_tabs.convert_onnx import create_onnx_app
-from gradio_tabs.dataset import create_dataset_app
-from gradio_tabs.inference import create_inference_app
-from gradio_tabs.merge import create_merge_app
-from gradio_tabs.style_vectors import create_style_vectors_app
-from gradio_tabs.train import create_train_app
+from webui.gradio_tabs.convert_onnx import create_onnx_app
+from webui.gradio_tabs.dataset import create_dataset_app
+from webui.gradio_tabs.inference import create_inference_app
+from webui.gradio_tabs.merge import create_merge_app
+from webui.gradio_tabs.style_vectors import create_style_vectors_app
+from webui.gradio_tabs.train import create_train_app
 from style_bert_vits2.constants import GRADIO_THEME, VERSION
 from style_bert_vits2.nlp.japanese import pyopenjtalk_worker
 from style_bert_vits2.nlp.japanese.user_dict import update_dict

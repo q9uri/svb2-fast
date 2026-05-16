@@ -37,7 +37,7 @@ User/slm/*/*.bin
 
 safetensors.ipynb
 *.wav
-/static/
+/webui/static/
 /roadmap/
 
 # pyopenjtalk's dictionary
