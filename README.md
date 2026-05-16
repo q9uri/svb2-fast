@@ -129,7 +129,6 @@ python scripts/speech_mos.py -m <model_name>
 ```
 ステップごとの自然性評価が表示され、`mos_results`フォルダの`mos_{model_name}.csv`と`mos_{model_name}.png`に結果が保存される。読み上げさせたい文章を変えたかったら中のファイルを弄って各自調整してください。またあくまでアクセントや感情表現や抑揚を全く考えない基準での評価で、目安のひとつなので、実際に読み上げさせて選別するのが一番だと思います。
 
---- 
 
 - **解説チュートリアル動画** [YouTube](https://youtu.be/aTUSzgDl0iY)　[ニコニコ動画](https://www.nicovideo.jp/watch/sm43391524)
 - [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/litagin01/Style-Bert-VITS2/blob/master/colab.ipynb)
@@ -138,22 +137,8 @@ python scripts/speech_mos.py -m <model_name>
 - [Zennの解説記事](https://zenn.dev/litagin/articles/034818a5256ff4)
 
 
-## Bert-VITS2との関係
 
-基本的にはBert-VITS2のモデル構造を少し改造しただけです。[旧事前学習モデル](https://huggingface.co/litagin/Style-Bert-VITS2-1.0-base)も[JP-Extraの事前学習モデル](https://huggingface.co/litagin/Style-Bert-VITS2-2.0-base-JP-Extra)も、実質Bert-VITS2 v2.1 or JP-Extraと同じものを使用しています（不要な重みを削ってsafetensorsに変換したもの）。
-
-具体的には以下の点が異なります。
-
-- [EasyBertVits2](https://github.com/Zuntan03/EasyBertVits2)のように、PythonやGitを知らない人でも簡単に使える。
-- 感情埋め込みのモデルを変更（256次元の[wespeaker-voxceleb-resnet34-LM](https://huggingface.co/pyannote/wespeaker-voxceleb-resnet34-LM)へ、感情埋め込みというよりは話者識別のための埋め込み）
-- 感情埋め込みもベクトル量子化を取り払い、単なる全結合層に。
-- スタイルベクトルファイル`style_vectors.npy`を作ることで、そのスタイルを使って効果の強さも連続的に指定しつつ音声を生成することができる。
-- 各種WebUIを作成
-- bf16での学習のサポート
-- safetensors形式のサポート、デフォルトでsafetensorsを使用するように
-- その他軽微なbugfixやリファクタリング
-
-
+--- 
 ## References
 
 ### Style-Bert-VITS2
@@ -168,6 +153,20 @@ In addition, [text/user_dict/](text/user_dict) module is based on the following 
 - [voicevox_engine](https://github.com/VOICEVOX/voicevox_engine)
 and the license of this module is LGPL v3.
 
+#### Bert-VITS2との関係
+> 基本的にはBert-VITS2のモデル構造を少し改造しただけです。[旧事前学習モデル](https://huggingface.co/litagin/Style-Bert-VITS2-1.0-base)も[JP-Extraの事前学習モデル](https://huggingface.co/litagin/Style-Bert-VITS2-2.0-base-JP-Extra)も、実質Bert-VITS2 v2.1 or JP-Extraと同じものを使用しています（不要な重みを削ってsafetensorsに変換したもの）。
+
+> 具体的には以下の点が異なります。
+
+- [EasyBertVits2](https://github.com/Zuntan03/EasyBertVits2)のように、PythonやGitを知らない人でも簡単に使える。
+- 感情埋め込みのモデルを変更（256次元の[wespeaker-voxceleb-resnet34-LM](https://huggingface.co/pyannote/wespeaker-voxceleb-resnet34-LM)へ、感情埋め込みというよりは話者識別のための埋め込み）
+- 感情埋め込みもベクトル量子化を取り払い、単なる全結合層に。
+- スタイルベクトルファイル`style_vectors.npy`を作ることで、そのスタイルを使って効果の強さも連続的に指定しつつ音声を生成することができる。
+- 各種WebUIを作成
+- bf16での学習のサポート
+- safetensors形式のサポート、デフォルトでsafetensorsを使用するように
+- その他軽微なbugfixやリファクタリング
+
 ### Bert-VITS2
 + [anyvoiceai/MassTTS](https://github.com/anyvoiceai/MassTTS)
 + [jaywalnut310/vits](https://github.com/jaywalnut310/vits)
@@ -178,6 +177,7 @@ and the license of this module is LGPL v3.
 + [fish-speech](https://github.com/fishaudio/fish-speech)
 + [Bert-VITS2-UI](https://github.com/jiangyuxiaoxiao/Bert-VITS2-UI)
 
+--- 
 
 ## LICENSE
 
@@ -186,15 +186,12 @@ This repository is licensed under the GNU Affero General Public License v3.0, th
 In addition, [text/user_dict/](text/user_dict) module is licensed under the GNU Lesser General Public License v3.0, inherited from the original VOICEVOX engine repository. For more details, see [LGPL_LICENSE](LGPL_LICENSE).
 
 
-
-Below is the original README.md.
----
+--- 
+# Bert-VITS2
 
 <div align="center">
 
 <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/fishaudio/fish-diffusion@main/images/logo_512x512.png" width="256" height="256" />
-
-# Bert-VITS2
 
 VITS2 Backbone with multilingual bert
 
