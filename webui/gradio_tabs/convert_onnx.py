@@ -13,7 +13,7 @@ def call_convert_onnx(
         return "Error: モデル名を入力してください。"
     logger.info("Start converting model to onnx...")
     cmd = [
-        "convert_onnx.py",
+        "scripts/convert/convert_onnx.py",
         "--model",
         model,
     ]
