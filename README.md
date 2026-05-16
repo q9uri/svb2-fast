@@ -1,37 +1,20 @@
-# Style-Bert-VITS2
+# Style-SSE-fast-VITS2
 
 **利用の際は必ず[お願いとデフォルトモデルの利用規約](/docs/TERMS_OF_USE.md)をお読みください。**
 
-Bert-VITS2 with more controllable voice styles.
+## documents
 
-https://github.com/litagin02/Style-Bert-VITS2/assets/139731664/e853f9a2-db4a-4202-a1dd-56ded3c562a0
+- [Style-Bert-VITS2からの更新履歴](/docs/CHANGELOG.md)
+- CLIでの使い方は[こちら](/docs/CLI.md)を参照してください。
+- [よくある質問](/docs/FAQ.md)も参照してください。
 
-You can install via `pip install style-bert-vits2` (inference only), see [library.ipynb](/library.ipynb) for example usage.
 
-- **解説チュートリアル動画** [YouTube](https://youtu.be/aTUSzgDl1iY)　[ニコニコ動画](https://www.nicovideo.jp/watch/sm43391524)
-- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/litagin02/Style-Bert-VITS2/blob/master/colab.ipynb)
-- [**よくある質問** (FAQ)](/docs/FAQ.md)
-- [🤗 オンラインデモはこちらから](https://huggingface.co/spaces/litagin/Style-Bert-VITS2-Editor-Demo)
-- [Zennの解説記事](https://zenn.dev/litagin/articles/034819a5256ff4)
+This repository is based on [Style-Bert-VITS2](https://github.com/litagin02/Style-Bert-VITS2), [Bert-VITS2](https://github.com/fishaudio/Bert-VITS2)
+so many thanks to the original author!
 
-- [**リリースページ**](https://github.com/litagin02/Style-Bert-VITS2/releases/)、[更新履歴](/docs/CHANGELOG.md)
-  - 2025-08-24: Ver 2.7.0: 外部ライブラリ [Aivis Project](https://aivis-project.com/) 等との連携のため、ONNX変換のGUI追加、また音声認識モデルとして `litagin/anime-whisper` の追加等
-  - 2024-09-09: Ver 2.6.1: Google colabでうまく学習できない等のバグ修正のみ
-  - 2024-06-16: Ver 2.6.0 (モデルの差分マージ・加重マージ・ヌルモデルマージの追加、使い道については[この記事](https://zenn.dev/litagin/articles/1297b1dc7bdc79)参照)
-  - 2024-06-14: Ver 2.5.1 (利用規約をお願いへ変更したのみ)
-  - 2024-06-02: Ver 2.5.0 (**[利用規約](/docs/TERMS_OF_USE.md)の追加**、フォルダ分けからのスタイル生成、小春音アミ・あみたろモデルの追加、インストールの高速化等)
-  - 2024-03-16: ver 2.4.1 (**batファイルによるインストール方法の変更**)
-  - 2024-03-15: ver 2.4.0 (大規模リファクタリングや種々の改良、ライブラリ化)
-  - 2024-02-26: ver 2.3 (辞書機能とエディター機能)
-  - 2024-02-09: ver 2.2
-  - 2024-02-07: ver 2.1
-  - 2024-02-03: ver 2.0 (JP-Extra)
-  - 2024-01-09: ver 1.3
-  - 2023-12-31: ver 1.2
-  - 2023-12-29: ver 1.1
-  - 2023-12-27: ver 1.0
+see [library.ipynb](/library.ipynb) for example usage.
 
-This repository is based on [Bert-VITS2](https://github.com/fishaudio/Bert-VITS2) v2.1 and Japanese-Extra, so many thanks to the original author!
+
 
 **概要**
 
@@ -43,10 +26,6 @@ This repository is based on [Bert-VITS2](https://github.com/fishaudio/Bert-VITS2
 - 元々「楽しそうな文章は楽しそうに、悲しそうな文章は悲しそうに」読むのがBert-VITS2の強みですので、スタイル指定がデフォルトでも感情豊かな音声を生成することができます。
 
 
-## 使い方
-
-- CLIでの使い方は[こちら](/docs/CLI.md)を参照してください。
-- [よくある質問](/docs/FAQ.md)も参照してください。
 
 ### 動作環境
 
@@ -68,24 +47,6 @@ Windowsを前提としています。
 
 またアップデートをしたい場合は、`Update-Style-Bert-VITS2.bat`をダブルクリックしてください。
 
-ただし2024-03-16の**2.4.1**バージョン未満からのアップデートの場合は、全てを削除してから再びインストールする必要があります。申し訳ありません。移行方法は[CHANGELOG.md](/docs/CHANGELOG.md)を参照してください。
-
-#### GitやPython使える人
-
-Pythonの仮想環境・パッケージ管理ツールである[uv](https://github.com/astral-sh/uv)がpipより高速なので、それを使ってインストールすることをお勧めします。
-（使いたくない場合は通常のpipでも大丈夫です。）
-
-```bash
-powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-git clone https://github.com/litagin02/Style-Bert-VITS2.git
-cd Style-Bert-VITS2
-uv venv venv
-venv\Scripts\activate
-uv pip install "torch<2.4" "torchaudio<2.4" --index-url https://download.pytorch.org/whl/cu118
-uv pip install -r requirements.txt
-python initialize.py  # 必要なモデルとデフォルトTTSモデルをダウンロード
-```
-最後を忘れずに。
 
 ### 音声合成
 
@@ -154,7 +115,7 @@ API仕様は起動後に`/docs`にて確認ください。
 ### マージ
 
 2つのモデルを、「声質」「声の高さ」「感情表現」「テンポ」の4点で混ぜ合わせて、新しいモデルを作ったり、また「あるモデルに、別の2つのモデルの差分を足す」等の操作ができます。
-`App.bat`をダブルクリックか`python app.py`して開くWebUIの「マージ」タブから、2つのモデルを選択してマージすることができます。または`Merge.bat`をダブルクリックでもその単独タブが開きます。
+`App.bat`をダブルクリックか`python webui/app.py`して開くWebUIの「マージ」タブから、2つのモデルを選択してマージすることができます。または`Merge.bat`をダブルクリックでもその単独タブが開きます。
 
 ### ONNX変換
 
@@ -164,9 +125,18 @@ API仕様は起動後に`/docs`にて確認ください。
 
 学習結果のうちどのステップ数がいいかの「一つの」指標として、[SpeechMOS](https://github.com/tarepan/SpeechMOS) を使うスクリプトを用意しています:
 ```bash
-python speech_mos.py -m <model_name>
+python scripts/speech_mos.py -m <model_name>
 ```
 ステップごとの自然性評価が表示され、`mos_results`フォルダの`mos_{model_name}.csv`と`mos_{model_name}.png`に結果が保存される。読み上げさせたい文章を変えたかったら中のファイルを弄って各自調整してください。またあくまでアクセントや感情表現や抑揚を全く考えない基準での評価で、目安のひとつなので、実際に読み上げさせて選別するのが一番だと思います。
+
+--- 
+
+- **解説チュートリアル動画** [YouTube](https://youtu.be/aTUSzgDl0iY)　[ニコニコ動画](https://www.nicovideo.jp/watch/sm43391524)
+- [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](http://colab.research.google.com/github/litagin01/Style-Bert-VITS2/blob/master/colab.ipynb)
+- [**よくある質問** (FAQ)](/docs/FAQ.md)
+- [🤗 オンラインデモはこちらから](https://huggingface.co/spaces/litagin/Style-Bert-VITS1-Editor-Demo)
+- [Zennの解説記事](https://zenn.dev/litagin/articles/034818a5256ff4)
+
 
 ## Bert-VITS2との関係
 
@@ -185,6 +155,8 @@ python speech_mos.py -m <model_name>
 
 
 ## References
+
+### Style-Bert-VITS2
 In addition to the original reference (written below), I used the following repositories:
 - [Bert-VITS2](https://github.com/fishaudio/Bert-VITS2)
 - [EasyBertVits2](https://github.com/Zuntan03/EasyBertVits2)
@@ -195,6 +167,17 @@ In addition to the original reference (written below), I used the following repo
 In addition, [text/user_dict/](text/user_dict) module is based on the following repositories:
 - [voicevox_engine](https://github.com/VOICEVOX/voicevox_engine)
 and the license of this module is LGPL v3.
+
+### Bert-VITS2
++ [anyvoiceai/MassTTS](https://github.com/anyvoiceai/MassTTS)
++ [jaywalnut310/vits](https://github.com/jaywalnut310/vits)
++ [p0p4k/vits2_pytorch](https://github.com/p0p4k/vits2_pytorch)
++ [svc-develop-team/so-vits-svc](https://github.com/svc-develop-team/so-vits-svc)
++ [PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)
++ [emotional-vits](https://github.com/innnky/emotional-vits)
++ [fish-speech](https://github.com/fishaudio/fish-speech)
++ [Bert-VITS2-UI](https://github.com/jiangyuxiaoxiao/Bert-VITS2-UI)
+
 
 ## LICENSE
 
@@ -234,15 +217,6 @@ For quick guide, please refer to `webui_preprocess.py`.
 #### Video:https://www.bilibili.com/video/BV1hp4y1K78E
 #### Demo:https://www.bilibili.com/video/BV1TF411k78w
 #### QQ Group：815818430
-## References
-+ [anyvoiceai/MassTTS](https://github.com/anyvoiceai/MassTTS)
-+ [jaywalnut310/vits](https://github.com/jaywalnut310/vits)
-+ [p0p4k/vits2_pytorch](https://github.com/p0p4k/vits2_pytorch)
-+ [svc-develop-team/so-vits-svc](https://github.com/svc-develop-team/so-vits-svc)
-+ [PaddlePaddle/PaddleSpeech](https://github.com/PaddlePaddle/PaddleSpeech)
-+ [emotional-vits](https://github.com/innnky/emotional-vits)
-+ [fish-speech](https://github.com/fishaudio/fish-speech)
-+ [Bert-VITS2-UI](https://github.com/jiangyuxiaoxiao/Bert-VITS2-UI)
 ## 感谢所有贡献者作出的努力
 <a href="https://github.com/fishaudio/Bert-VITS2/graphs/contributors" target="_blank">
   <img src="https://contrib.rocks/image?repo=fishaudio/Bert-VITS2"/>
