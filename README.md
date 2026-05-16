@@ -15,7 +15,8 @@ so many thanks to the original author!
 see [library.ipynb](/library.ipynb) for example usage.
 
 
-
+---
+## STyle-Bert-VITS2
 **概要**
 
 - 入力されたテキストの内容をもとに感情豊かな音声を生成する[Bert-VITS2](https://github.com/fishaudio/Bert-VITS2)のv2.1とJapanese-Extraを元に、感情や発話スタイルを強弱込みで自由に制御できるようにしたものです。
